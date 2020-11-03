@@ -9,8 +9,11 @@ namespace ImageBase.WebApp.Dtos.AuthenticationDto
     public class RegisterUserDto
     {
         public string Email { get; set; }
+
+        [MinLength(6, ErrorMessage = "String length must be more than 6 characters")]
         public string Password { get; set; }
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string PasswordConfirm { get; set; }
     }
 }

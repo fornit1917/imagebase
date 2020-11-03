@@ -16,6 +16,7 @@ using AutoMapper;
 using ImageBase.WebApp.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Serialization;
+using Serilog;
 
 namespace ImageBase.WebApp
 {
@@ -53,6 +54,8 @@ namespace ImageBase.WebApp
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 
