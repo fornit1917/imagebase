@@ -1,0 +1,39 @@
+﻿body {
+    font-size: 15px;
+    font-weight: 400;
+}
+
+h2 {
+    font-size: 26px;
+    font-weight: 300;
+    line-height: 46px;
+}
+
+em {
+    color: darkorchid;
+}
+
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+.validation-summary-errors ul {
+    color: #b94a48;
+    border: 1px solid #b94a48;
+    background-color: mistyrose;
+    display: block;
+    padding: 10px 20px 10px 30px;
+}
+
+#index {
+    margin: 20px;
+}
+

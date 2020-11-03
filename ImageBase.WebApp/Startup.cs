@@ -42,6 +42,8 @@ namespace ImageBase.WebApp
             services.AddIdentity<User, IdentityRole>().
                AddEntityFrameworkStores<AspPostgreSQLContext>();
 
+            services.AddMvc();
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "ImageBase.Cookie";
@@ -64,6 +66,8 @@ namespace ImageBase.WebApp
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 

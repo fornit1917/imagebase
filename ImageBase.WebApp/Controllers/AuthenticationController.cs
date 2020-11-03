@@ -19,8 +19,8 @@ using Microsoft.Extensions.Logging;
 namespace ImageBase.WebApp.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class AuthenticationController : ControllerBase
+    [Controller]
+    public class AuthenticationController : Controller
     {
 
         private readonly UserManager<User> _userManager;
@@ -38,45 +38,78 @@ namespace ImageBase.WebApp.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+        [Route("register")]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto model)
+        public async Task<IActionResult> Register(RegisterUserDto model)
         {
             var userExists = await _userManager.FindByNameAsync(model.Email);
             if (userExists != null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    new Response { Status = "Error", Message = "User already exists!" });
+                ModelState.AddModelError("UserExcisting", "User already exists!");
+                return View(model);
             }
-            User user = new User()
+            if (ModelState.IsValid)
             {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Email
-            };            
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, UserRoles.User);
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
-            }
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+                
+                User user = new User()
+                {
+                    Email = model.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserName = model.Email
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.User);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }                           
+            return View(model);
+        }
+
+        [HttpGet]
+        [Route("login")]
+        public IActionResult Login(string returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
         }
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserDto model)
+        public async Task<IActionResult> Login(LoginUserDto model, string returnUrl)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                return Ok(new Response { Status = "Success", Message = "Login succeeded" });
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(returnUrl))
+                        return Redirect(returnUrl);
+                    else
+                        return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("Unauthorized", "Credentials of user are invalid");
+                }
             }
-            else
-            {
-                return StatusCode(StatusCodes.Status401Unauthorized, new Response { Status = "Error", Message = "Credentials of user are invalid" });
-            }
+            return View(model);
+            
         }
 
         [HttpGet]
@@ -84,7 +117,7 @@ namespace ImageBase.WebApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return Ok(new Response { Status = "Success", Message = "Logout succeeded" });
+            return RedirectToAction("Index","Home");
         }
     }
 }

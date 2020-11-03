@@ -1,0 +1,35 @@
+﻿@model ImageBase.WebApp.Dtos.AuthenticationDto.LoginUserDto
+@addTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row h-100 align-items-center justify-content-center">
+    <form class="col-lg-4 col-md-6" method="post"
+          asp-controller="Authentication" 
+          asp-action="login" 
+          asp-route-returnUrl="@ViewBag.ReturnUrl">
+
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Sign In</h2>
+            <a href="/api/Authentication/register">Sign Up</a>
+        </div>
+
+        @Html.ValidationMessage("Unauthorized")
+
+        <div class="form-group">
+            <label asp-for="Email">e-mail: </label> <br />
+            <input asp-for="Email" type="email" class="form-control" id="email" placeholder="Your email">
+            <span asp-validation-for="Email"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Password"></label>Password: <br />
+            <input asp-for="Password" type="password" class="form-control" id="password" placeholder="Password">
+            <span asp-validation-for="Password"></span>
+        </div>
+
+        <span class="input-group-btn">
+            <input type="submit" class="btn btn-primary btn-block" value="Sign In">
+        </span>
+    </form>
+</div>
