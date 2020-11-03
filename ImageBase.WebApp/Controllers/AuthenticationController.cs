@@ -67,6 +67,7 @@ namespace ImageBase.WebApp.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    await _signInManager.PasswordSignInAsync(user.Email, model.Password, true, false);
                     await _userManager.AddToRoleAsync(user, UserRoles.User);
                     return RedirectToAction("Index", "Home");
                 }
