@@ -42,6 +42,19 @@ namespace ImageBase.WebApp
             services.AddIdentity<User, IdentityRole>().
                AddEntityFrameworkStores<AspPostgreSQLContext>();
 
+            services.AddMvc();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = "ImageBase.Cookie";
+                options.Cookie.HttpOnly = true;
+
+                options.ExpireTimeSpan = TimeSpan.FromDays(36500);
+
+                options.LoginPath = "/api/Authentication/login";
+                options.SlidingExpiration = true;
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +66,8 @@ namespace ImageBase.WebApp
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 
