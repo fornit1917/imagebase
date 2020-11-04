@@ -8,12 +8,10 @@ namespace ImageBase.Common
         public static int Calculate(string a, string b)
         {
             int sum = 0;
-            var splitFirst = a.ToCharArray();
-            var splitSecond = b.ToCharArray();
 
-            for (int i = 0; i < splitFirst.Length; i++)
+            for (int i = 0; i < a.Length; i++)
             {
-                sum += splitFirst[i].Equals(splitSecond[i]) ? 0 : 1;
+                sum += a[i].Equals(b[i]) ? 0 : 1;
             }
 
             return sum;
@@ -21,7 +19,16 @@ namespace ImageBase.Common
 
         public static int Calculate(long a, long b)
         {
-            return Calculate(new BitArray(BitConverter.GetBytes(a)), new BitArray(BitConverter.GetBytes(b)));
+            long c = a ^ b;
+            int sum = 0;
+
+            while (c > 0)
+            {
+                sum += (c & 1) == 1 ? 1 : 0; ;
+                c >>= 1;
+            }
+
+            return sum;
         }
 
         public static int Calculate(BitArray a, BitArray b)
