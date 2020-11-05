@@ -55,8 +55,6 @@ namespace ImageBase.WebApp
 
             app.UseHttpsRedirection();
 
-            app.UseSerilogRequestLogging();
-
             app.UseRouting();
 
             app.UseAuthentication();
