@@ -92,7 +92,7 @@ namespace ImageBase.WebApp.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login(LoginUserDto model, string returnUrl)
+        public async Task<IActionResult> Login(LoginUserDto model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
