@@ -27,7 +27,7 @@ namespace ImageBase.Common.UnitTests
 
         [Theory]
         [MemberData(nameof(Strings))]
-        public void CalculateForStrings(string a, string b, int expected)
+        public void CalculatesForStrings(string a, string b, int expected)
         {
             Assert.Equal(expected, HammingDistance.Calculate(a, b));
         }
@@ -41,14 +41,14 @@ namespace ImageBase.Common.UnitTests
         [InlineData(254, 0, 7)]
         [InlineData(0, 0, 0)]
         [InlineData(240, 85, 4)]
-        public void CalculateForLong(long a, long b, int expected)
+        public void CalculatesForLong(long a, long b, int expected)
         {
             Assert.Equal(expected, HammingDistance.Calculate(a, b));
         }
 
         [Theory]
         [MemberData(nameof(Bits))]
-        public void CalculateForBitArrays(BitArray a, BitArray b, int expected)
+        public void CalculatesForBitArrays(BitArray a, BitArray b, int expected)
         {
             Assert.Equal(expected, HammingDistance.Calculate(a, b));
         }
