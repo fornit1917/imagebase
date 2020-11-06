@@ -1,12 +1,12 @@
 ﻿using ImageBase.WebApp.Controllers;
 using ImageBase.WebApp.Dtos.AuthenticationDto;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,16 +27,16 @@ namespace ImageBase.WebApp.IntegrationTests.ControllersTests
 
             response.EnsureSuccessStatusCode();
 
-            Assert.Equal("text/html; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
+            Assert.Equal("application/json; charset=utf-8",
+        response.Content.Headers.ContentType.ToString());
         }
 
         [Fact]
         public async Task RegisterUserPOSTOK()
         {
             var content = new RegisterUserDto() { Email = "testemail@mail.ru", Password = "123ASD!asd", PasswordConfirm = "123ASD!asd" };
-            var jsonContent = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
 
+            var jsonContent = new StringContent(JsonSerializer.Serialize(content), Encoding.UTF8, "application/json");
             var result = await _client.PostAsync("/api/authentication/register", jsonContent);
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -46,8 +46,8 @@ namespace ImageBase.WebApp.IntegrationTests.ControllersTests
         public async Task RegisterUserPOSTBad()
         {
             var content = new RegisterUserDto();
-            var jsonContent = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
-           
+
+            var jsonContent = new StringContent(JsonSerializer.Serialize(content), Encoding.UTF8, "application/json");                       
             var result = await _client.PostAsync("/api/authentication/register", jsonContent);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);

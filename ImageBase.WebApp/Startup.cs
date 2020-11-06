@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using AutoMapper;
 using ImageBase.WebApp.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Serialization;
 using Serilog;
+using Microsoft.Extensions.DependencyInjection;
+using AutoMapper;
 
 namespace ImageBase.WebApp
 {
@@ -39,7 +39,7 @@ namespace ImageBase.WebApp
             {
                 s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(typeof(Startup));
             services.AddIdentity<User, IdentityRole>().
                AddEntityFrameworkStores<AspPostgreSQLContext>();
 

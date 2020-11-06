@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using AutoMapper.Configuration;
 using ImageBase.WebApp.Dtos.AuthenticationDto;
 using ImageBase.WebApp.Models.Authentication;
 using ImageBase.WebApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -45,6 +45,7 @@ namespace ImageBase.WebApp.Controllers
             }
             User user = new User()
             {
+                UserName = model.Email,
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString()
             };

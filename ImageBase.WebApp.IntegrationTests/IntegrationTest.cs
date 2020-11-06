@@ -20,7 +20,10 @@ namespace ImageBase.WebApp.IntegrationTests
             _factory = fixture;
             _client = _factory.CreateClient();
             _configuration = new ConfigurationBuilder()
-                  .AddJsonFile("integrationsettings.json")
+                  .AddJsonFile("integrationsettings.json", optional: false, reloadOnChange: true)
+                  .AddJsonFile($"integrationsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+                  .AddJsonFile($"integrationsettings.{Environment.MachineName}.json", optional: true)
+                  .AddEnvironmentVariables()
                   .Build();
         }
     }
