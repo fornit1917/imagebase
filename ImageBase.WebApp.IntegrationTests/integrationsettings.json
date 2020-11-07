@@ -1,5 +1,5 @@
 {
   "ConnectionStrings": {
-    "AspPostgreSQLContext": "Host=localhost;Port=5432;Database=picture_db_test;Integrated Security=true;Username=postgres;Password=1234;"
+    "AspPostrgreSQLContextTest": "Host=localhost;Port=5432;Database=picture_db_test;Integrated Security=true;Username=postgres;Password=1234;"
   }
 }
