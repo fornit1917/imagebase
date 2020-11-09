@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 
 namespace ImageBase.ImageHash
 {
-    class ImageUtils
+    internal class ImageUtils
     {
         private const int IMAGEMATRIXSIZE = 32;
         private const int RESULTMATRIXSIZE = 8;
@@ -15,22 +13,37 @@ namespace ImageBase.ImageHash
 
         public ImageUtils()
         {
-            CalculateCosMatrix();
+            CalculateCosMatrices();
         }
 
         public int[,] CalculateHashMatrix(Stream imageStream)
         {
             var originalImage = new Bitmap(imageStream);
-            Bitmap imageForDCT = ConvertImageToGrey(new Bitmap(originalImage, 32, 32));
+            Bitmap imageForDCT = ConvertImageToGrey(originalImage);
             double[,] DCTResultMatrix = DCT(imageForDCT);
-            double[,] reducedMatrix = ReduceSquareMatrix(DCTResultMatrix, 8);
+            double[,] reducedMatrix = ReduceSquareMatrix(DCTResultMatrix);
             double averageValue = GetAverageValueSquareMatrix(reducedMatrix);
             int[,] hashMatrix = GetHashSquareMatrix(reducedMatrix, averageValue);
             return hashMatrix;
         }
 
+        private void CalculateCosMatrices()
+        {
+            cosMatrix = new double[IMAGEMATRIXSIZE, IMAGEMATRIXSIZE];
+            for (int k = 0; k < IMAGEMATRIXSIZE; k++)
+            {
+                for (int n = 0; n < IMAGEMATRIXSIZE; n++)
+                {
+                    double cosValue = Math.Cos(((2 * n + 1) * k * Math.PI) / (2 * IMAGEMATRIXSIZE));
+                    cosMatrix[k, n] = cosValue;
+                }
+            }
+            transposeCosMatrix = SquareMatrixTranspose(cosMatrix);
+        }
+
         private Bitmap ConvertImageToGrey(Bitmap originalImage)
         {
+            originalImage = new Bitmap(originalImage, IMAGEMATRIXSIZE, IMAGEMATRIXSIZE);
             var newImage = new Bitmap(IMAGEMATRIXSIZE, IMAGEMATRIXSIZE);
             for (int i = 0; i < IMAGEMATRIXSIZE; i++)
             {
@@ -53,12 +66,12 @@ namespace ImageBase.ImageHash
             return transformResult;
         }
 
-        private double[,] ReduceSquareMatrix(double[,] initialMatrix, int resultSize)
+        private double[,] ReduceSquareMatrix(double[,] initialMatrix)
         {
-            double[,] reducedMatrix = new double[resultSize, resultSize];
-            for (int i = 0; i < resultSize; i++)
+            double[,] reducedMatrix = new double[RESULTMATRIXSIZE, RESULTMATRIXSIZE];
+            for (int i = 0; i < RESULTMATRIXSIZE; i++)
             {
-                for (int j = 0; j < resultSize; j++)
+                for (int j = 0; j < RESULTMATRIXSIZE; j++)
                 {
                     reducedMatrix[i, j] = initialMatrix[i + 1, j + 1];
                 }
@@ -104,22 +117,6 @@ namespace ImageBase.ImageHash
                 }
             }
             return imageMatrix;
-        }
-
-        private void CalculateCosMatrix()
-        {
-            cosMatrix = new double[IMAGEMATRIXSIZE, IMAGEMATRIXSIZE];
-            transposeCosMatrix = new double[IMAGEMATRIXSIZE, IMAGEMATRIXSIZE];
-            double cosValue;
-            for (int k = 0; k < IMAGEMATRIXSIZE; k++)
-            {
-                for (int n = 0; n < IMAGEMATRIXSIZE; n++)
-                {
-                    cosValue = Math.Cos(((2 * n + 1) * k * Math.PI) / (2 * IMAGEMATRIXSIZE));
-                    cosMatrix[k, n] = cosValue;
-                }
-            }
-            transposeCosMatrix = SquareMatrixTranspose(cosMatrix);
         }
 
         private double[,] SquareMatrixMultiply(double[,] firstMatrix, double[,] secondMatrix)

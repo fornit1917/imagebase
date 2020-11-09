@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.IO;
-using System.Text;
 
 namespace ImageBase.ImageHash
 {
@@ -9,10 +8,12 @@ namespace ImageBase.ImageHash
     {
         private const int HASHMATRIXSIZE = 8;
         private ImageUtils imageHandler;
+
         public ImageHashService()
         {
             imageHandler = new ImageUtils();
         }
+
         public long CalculateImageHash(Stream imageStream)
         {
             long pHash;
