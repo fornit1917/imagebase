@@ -36,6 +36,26 @@ namespace ImageBase.ImageHash.Tests
         }
 
         [Fact]
+        public void CalculatesDifferentImagesForLong()
+        {
+            var imageHashService = new ImageHashService();
+            long hashJpg;
+            long hashJpgOther;
+
+            using (var jpgStream = new FileStream(@"IMG_0.jpg", FileMode.Open, FileAccess.Read))
+            {
+                hashJpg = imageHashService.CalculateImageHash(jpgStream);
+            }
+
+            using (var jpgStream = new FileStream(@"IMG_18.jpg", FileMode.Open, FileAccess.Read))
+            {
+                hashJpgOther = imageHashService.CalculateImageHash(jpgStream);
+            }
+
+            Assert.InRange(HammingDistance.Calculate(hashJpg, hashJpgOther), 10, 100);
+        }
+
+        [Fact]
         public void CalculatesForBitArray()
         {
             var imageHashService = new ImageHashService();
@@ -60,6 +80,26 @@ namespace ImageBase.ImageHash.Tests
 
             Assert.Equal(0, HammingDistance.Calculate(hashPng, hashJpg));
             Assert.Equal(1, HammingDistance.Calculate(hashJpgSmall, hashJpg));
+        }
+
+        [Fact]
+        public void CalculatesDifferentImagesForBitArray()
+        {
+            var imageHashService = new ImageHashService();
+            var hashJpg = new BitArray(64);
+            var hashJpgOther = new BitArray(64);
+
+            using (var jpgStream = new FileStream(@"IMG_0.jpg", FileMode.Open, FileAccess.Read))
+            {
+                imageHashService.CalculateImageHash(jpgStream, hashJpg);
+            }
+
+            using (var jpgStream = new FileStream(@"IMG_18.jpg", FileMode.Open, FileAccess.Read))
+            {
+                imageHashService.CalculateImageHash(jpgStream);
+            }
+
+            Assert.InRange(HammingDistance.Calculate(hashJpg, hashJpgOther), 10, 100);
         }
     }
 }

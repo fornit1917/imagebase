@@ -10,6 +10,7 @@
     <None Remove="IMG_0.jpg" />
     <None Remove="IMG_0.png" />
     <None Remove="IMG_0_small.jpg" />
+    <None Remove="IMG_18.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="IMG_0_small.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IMG_18.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
