@@ -1,30 +1,32 @@
 ﻿using System;
+using System.Collections;
 using System.Drawing;
 using System.IO;
+using ImageMagick;
 
 namespace ImageBase.ImageHash
 {
-    internal class ImageUtils
+    internal class ImageDCTHashCalculator
     {
         private const int IMAGEMATRIXSIZE = 32;
         private const int RESULTMATRIXSIZE = 8;
         private double[,] cosMatrix;
         private double[,] transposeCosMatrix;
 
-        public ImageUtils()
+        public ImageDCTHashCalculator()
         {
             CalculateCosMatrices();
         }
 
-        public int[,] CalculateHashMatrix(Stream imageStream)
+        public void FillBitArrayWithHash(Stream imageStream,BitArray pHash)
         {
             var originalImage = new Bitmap(imageStream);
-            Bitmap imageForDCT = ConvertImageToGrey(originalImage);
-            double[,] DCTResultMatrix = DCT(imageForDCT);
-            double[,] reducedMatrix = ReduceSquareMatrix(DCTResultMatrix);
-            double averageValue = GetAverageValueSquareMatrix(reducedMatrix);
-            int[,] hashMatrix = GetHashSquareMatrix(reducedMatrix, averageValue);
-            return hashMatrix;
+            var reducedImage = new Bitmap(originalImage, 32, 32);
+            Bitmap greyImage = ConvertImageToGrey(reducedImage);
+            double[,] imageMatrix = GetImageMatrix(greyImage);
+            double[,] dctResultMatrix = CalculateDCT(imageMatrix);
+            double averageValue = GetAverageValueSquareMatrix(dctResultMatrix);
+            FillArrayWithMatrixHash(dctResultMatrix, averageValue,pHash);
         }
 
         private void CalculateCosMatrices()
@@ -43,7 +45,6 @@ namespace ImageBase.ImageHash
 
         private Bitmap ConvertImageToGrey(Bitmap originalImage)
         {
-            originalImage = new Bitmap(originalImage, IMAGEMATRIXSIZE, IMAGEMATRIXSIZE);
             var newImage = new Bitmap(IMAGEMATRIXSIZE, IMAGEMATRIXSIZE);
             for (int i = 0; i < IMAGEMATRIXSIZE; i++)
             {
@@ -58,26 +59,12 @@ namespace ImageBase.ImageHash
             return newImage;
         }
 
-        private double[,] DCT(Bitmap image)
+        private double[,] CalculateDCT(double[,] imageMatrix)
         {
-            double[,] imageMatrix = GetImageMatrix(image);
             double[,] cosMutlImageMatrix = SquareMatrixMultiply(cosMatrix, imageMatrix);
             double[,] transformResult = SquareMatrixMultiply(cosMutlImageMatrix, transposeCosMatrix);
             return transformResult;
-        }
-
-        private double[,] ReduceSquareMatrix(double[,] initialMatrix)
-        {
-            double[,] reducedMatrix = new double[RESULTMATRIXSIZE, RESULTMATRIXSIZE];
-            for (int i = 0; i < RESULTMATRIXSIZE; i++)
-            {
-                for (int j = 0; j < RESULTMATRIXSIZE; j++)
-                {
-                    reducedMatrix[i, j] = initialMatrix[i + 1, j + 1];
-                }
-            }
-            return reducedMatrix;
-        }
+        }      
 
         private double GetAverageValueSquareMatrix(double[,] matrix)
         {
@@ -86,29 +73,27 @@ namespace ImageBase.ImageHash
             {
                 for (int j = 0; j < RESULTMATRIXSIZE; j++)
                 {
-                    sum += matrix[i, j];
+                    sum += matrix[i+1, j+1];
                 }
             }
             double averageValue = sum / (RESULTMATRIXSIZE * RESULTMATRIXSIZE);
             return averageValue;
         }
 
-        private int[,] GetHashSquareMatrix(double[,] matrix, double averageValue)
+        private void FillArrayWithMatrixHash(double[,] matrix, double averageValue,BitArray pHash)
         {
-            int[,] hashMatrix = new int[RESULTMATRIXSIZE, RESULTMATRIXSIZE];
-            for (int i = 0; i < RESULTMATRIXSIZE; i++)
+            for (int i = 0,k = 0; i < RESULTMATRIXSIZE; i++)
             {
-                for (int j = 0; j < RESULTMATRIXSIZE; j++)
+                for (int j = 0; j < RESULTMATRIXSIZE; j++,k++)
                 {
-                    hashMatrix[i, j] = Convert.ToInt32(matrix[i, j] < averageValue);
+                    pHash[k] = (matrix[i+1, j+1] < averageValue);
                 }
             }
-            return hashMatrix;
         }
 
         private double[,] GetImageMatrix(Bitmap image)
         {
-            double[,] imageMatrix = new double[image.Height, image.Width];
+            double[,] imageMatrix = new double[IMAGEMATRIXSIZE, IMAGEMATRIXSIZE];
             for (int i = 0; i < image.Width; i++)
             {
                 for (int j = 0; j < image.Height; j++)

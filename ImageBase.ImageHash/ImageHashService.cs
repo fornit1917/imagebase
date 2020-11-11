@@ -7,26 +7,23 @@ namespace ImageBase.ImageHash
     public class ImageHashService : IImageHashService
     {
         private const int HASHMATRIXSIZE = 8;
-        private ImageUtils imageHandler;
+        private ImageDCTHashCalculator _imageHandler;
 
         public ImageHashService()
         {
-            imageHandler = new ImageUtils();
+            _imageHandler = new ImageDCTHashCalculator();
         }
 
         public long CalculateImageHash(Stream imageStream)
         {
             long pHash;
-
-            int[,] hashMatrix = imageHandler.CalculateHashMatrix(imageStream);
+            var hashArray = new BitArray(64);
+            _imageHandler.FillBitArrayWithHash(imageStream, hashArray);
 
             string hashString = "";
-            for (int i = 0; i < HASHMATRIXSIZE; i++)
+            for (int i = 0; i < 64; i++)
             {
-                for (int j = 0; j < HASHMATRIXSIZE; j++)
-                {
-                    hashString += hashMatrix[i, j].ToString();
-                }
+                hashString += Convert.ToInt32(hashArray[i]).ToString();
             }
             pHash = Convert.ToInt64(hashString, 2);
             return pHash;
@@ -34,14 +31,7 @@ namespace ImageBase.ImageHash
 
         public void CalculateImageHash(Stream imageStream, BitArray pHash)
         {
-            int[,] hashMatrix = imageHandler.CalculateHashMatrix(imageStream);
-            for (int i = 0, k = 0; i < HASHMATRIXSIZE; i++)
-            {
-                for (int j = 0; j < HASHMATRIXSIZE; j++, k++)
-                {
-                    pHash[k] = Convert.ToBoolean(hashMatrix[i, j]);
-                }
-            }
+            _imageHandler.FillBitArrayWithHash(imageStream,pHash);
         }
     }
 }
