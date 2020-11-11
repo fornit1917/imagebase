@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Drawing;
 using System.IO;
 using ImageBase.Common;
 using Xunit;
@@ -11,7 +12,8 @@ namespace ImageBase.ImageHash.Tests
         [Fact]
         public void CalculatesForLong()
         {
-            var imageHashService = new ImageHashService();
+            var imageHandler = new ImageDCTHashCalculator();
+            var imageHashService = new ImageHashService(imageHandler);
             long hashPng;
             long hashJpg;
             long hashJpgSmall;
@@ -38,7 +40,8 @@ namespace ImageBase.ImageHash.Tests
         [Fact]
         public void CalculatesDifferentImagesForLong()
         {
-            var imageHashService = new ImageHashService();
+            var imageHandler = new ImageDCTHashCalculator();
+            var imageHashService = new ImageHashService(imageHandler);
             long hashJpg;
             long hashJpgOther;
 
@@ -58,7 +61,8 @@ namespace ImageBase.ImageHash.Tests
         [Fact]
         public void CalculatesForBitArray()
         {
-            var imageHashService = new ImageHashService();
+            var imageHandler = new ImageDCTHashCalculator();
+            var imageHashService = new ImageHashService(imageHandler);
             var hashPng = new BitArray(64);
             var hashJpg = new BitArray(64);
             var hashJpgSmall = new BitArray(64);
@@ -85,7 +89,8 @@ namespace ImageBase.ImageHash.Tests
         [Fact]
         public void CalculatesDifferentImagesForBitArray()
         {
-            var imageHashService = new ImageHashService();
+            var imageHandler = new ImageDCTHashCalculator();
+            var imageHashService = new ImageHashService(imageHandler);
             var hashJpg = new BitArray(64);
             var hashJpgOther = new BitArray(64);
 

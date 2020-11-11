@@ -2,11 +2,10 @@
 using System.Collections;
 using System.Drawing;
 using System.IO;
-using ImageMagick;
 
 namespace ImageBase.ImageHash
 {
-    internal class ImageDCTHashCalculator
+    public class ImageDCTHashCalculator
     {
         private const int IMAGEMATRIXSIZE = 32;
         private const int RESULTMATRIXSIZE = 8;
@@ -17,11 +16,11 @@ namespace ImageBase.ImageHash
         {
             CalculateCosMatrices();
         }
-
+        
         public void FillBitArrayWithHash(Stream imageStream,BitArray pHash)
         {
             var originalImage = new Bitmap(imageStream);
-            var reducedImage = new Bitmap(originalImage, 32, 32);
+            var reducedImage = new Bitmap(originalImage, IMAGEMATRIXSIZE, IMAGEMATRIXSIZE);
             Bitmap greyImage = ConvertImageToGrey(reducedImage);
             double[,] imageMatrix = GetImageMatrix(greyImage);
             double[,] dctResultMatrix = CalculateDCT(imageMatrix);

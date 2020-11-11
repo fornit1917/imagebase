@@ -1,37 +1,39 @@
 ﻿using System;
 using System.Collections;
+using System.Drawing;
 using System.IO;
+using System.Text;
 
 namespace ImageBase.ImageHash
 {
     public class ImageHashService : IImageHashService
     {
-        private const int HASHMATRIXSIZE = 8;
+        private const int HASHSIZE = 64;
         private ImageDCTHashCalculator _imageHandler;
 
-        public ImageHashService()
+        public ImageHashService(ImageDCTHashCalculator imageHandler)
         {
-            _imageHandler = new ImageDCTHashCalculator();
+            _imageHandler = imageHandler;
         }
 
         public long CalculateImageHash(Stream imageStream)
         {
             long pHash;
-            var hashArray = new BitArray(64);
+            var hashArray = new BitArray(HASHSIZE);
             _imageHandler.FillBitArrayWithHash(imageStream, hashArray);
 
-            string hashString = "";
-            for (int i = 0; i < 64; i++)
+            StringBuilder stringHash = new StringBuilder(HASHSIZE);
+            for (int i = 0; i < HASHSIZE; i++)
             {
-                hashString += Convert.ToInt32(hashArray[i]).ToString();
+                stringHash.Append(Convert.ToInt32(hashArray[i]));
             }
-            pHash = Convert.ToInt64(hashString, 2);
+            pHash = Convert.ToInt64(stringHash.ToString(), 2);
             return pHash;
         }
 
         public void CalculateImageHash(Stream imageStream, BitArray pHash)
         {
-            _imageHandler.FillBitArrayWithHash(imageStream,pHash);
+            _imageHandler.FillBitArrayWithHash(imageStream, pHash);
         }
     }
 }
