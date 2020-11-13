@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ImageBase.WebApp.Data.Models.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ImageBase.WebApp.Data.ConfigurationDataBase.ConfigurationPostgreSQL
 {
-    public class IdentityUserConfiguration : IEntityTypeConfiguration<IdentityUser>
+    public class IdentityUserConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<IdentityUser> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.Property(e => e.Id).HasColumnName("id");
             builder.Property(e => e.UserName).HasColumnName("user_name");

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using ImageBase.WebApp.Dtos.AuthenticationDto;
-using ImageBase.WebApp.Models.Authentication;
+using ImageBase.WebApp.Data.Dtos.AuthenticationDto;
+using ImageBase.WebApp.Data.Models.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;

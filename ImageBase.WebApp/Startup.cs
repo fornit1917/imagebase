@@ -13,9 +13,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
-using ImageBase.WebApp.Models.Authentication;
+using ImageBase.WebApp.Data.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Serialization;
+using ImageBase.WebApp.Repositories;
+using ImageBase.WebApp.Services.Interfaces;
+using ImageBase.WebApp.Services.Implementations;
 
 namespace ImageBase.WebApp
 {
@@ -42,6 +45,12 @@ namespace ImageBase.WebApp
             services.AddIdentity<User, IdentityRole>().
                AddEntityFrameworkStores<AspPostgreSQLContext>();
 
+            services.AddScoped(typeof(IImageRepository), typeof(ImageRepository));
+            services.AddScoped(typeof(ICatalogRepository), typeof(CatalogRepository));
+
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ICatalogService, CatalogService>();
+
             services.AddMvc();
 
             services.ConfigureApplicationCookie(options =>
@@ -50,7 +59,7 @@ namespace ImageBase.WebApp
                 options.Cookie.HttpOnly = true;
 
                 options.ExpireTimeSpan = TimeSpan.FromDays(36500);
-
+                
                 options.LoginPath = "/api/Authentication/login";
                 options.SlidingExpiration = true;
             });

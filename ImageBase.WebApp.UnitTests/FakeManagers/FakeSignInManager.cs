@@ -1,4 +1,4 @@
-﻿using ImageBase.WebApp.Models.Authentication;
+﻿using ImageBase.WebApp.Data.Models.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

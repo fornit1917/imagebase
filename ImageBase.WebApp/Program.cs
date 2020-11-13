@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ImageBase.WebApp.Data.Seeding;
-using ImageBase.WebApp.Models.Authentication;
+using ImageBase.WebApp.Data.Models.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;

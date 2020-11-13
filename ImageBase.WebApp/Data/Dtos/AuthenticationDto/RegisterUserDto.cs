@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ImageBase.WebApp.Dtos.AuthenticationDto
+namespace ImageBase.WebApp.Data.Dtos.AuthenticationDto
 {
     public class RegisterUserDto
     {

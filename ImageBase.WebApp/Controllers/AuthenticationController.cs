@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Configuration;
-using ImageBase.WebApp.Dtos.AuthenticationDto;
-using ImageBase.WebApp.Models.Authentication;
+using ImageBase.WebApp.Data.Dtos.AuthenticationDto;
+using ImageBase.WebApp.Data.Models.Authentication;
 using ImageBase.WebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -56,8 +56,7 @@ namespace ImageBase.WebApp.Controllers
                 return View(model);
             }
             if (ModelState.IsValid)
-            {
-                
+            {               
                 User user = new User()
                 {
                     Email = model.Email,

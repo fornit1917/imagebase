@@ -1,18 +1,13 @@
 using AutoMapper;
 using ImageBase.WebApp.Controllers;
-using ImageBase.WebApp.Dtos.AuthenticationDto;
-using ImageBase.WebApp.Models.Authentication;
+using ImageBase.WebApp.Data.Dtos.AuthenticationDto;
+using ImageBase.WebApp.Data.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using Xunit;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authentication;
 using ImageBase.WebApp.UnitTests.FakeManagers;
 
 namespace ImageBase.WebApp.UnitTests

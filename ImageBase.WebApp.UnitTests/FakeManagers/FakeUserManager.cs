@@ -1,4 +1,4 @@
-﻿using ImageBase.WebApp.Models.Authentication;
+﻿using ImageBase.WebApp.Data.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
