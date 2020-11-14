@@ -36,7 +36,7 @@ namespace ImageBase.WebApp
         {
             services.AddControllers();
             services.AddDbContextPool<AspPostgreSQLContext>(options =>
-                    options.UseNpgsql(Configuration.GetConnectionString("AspPostgreSQLContext")));
+                    options.UseNpgsql(Configuration.GetConnectionString("MyAspPostgreSQLContext")));
             services.AddControllers().AddNewtonsoftJson(s =>
             {
                 s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
