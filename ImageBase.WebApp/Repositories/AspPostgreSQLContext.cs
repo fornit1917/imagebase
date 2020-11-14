@@ -20,6 +20,11 @@ namespace ImageBase.WebApp.Repositories
             : base(options)
         {
         }
+
+        public AspPostgreSQLContext()
+        {
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
