@@ -58,10 +58,9 @@ namespace ImageBase.WebApp.Services.Implementations
             return catalogsDto;
         }
 
-        public async Task<CatalogDto> UpdateCatalogAsync(int id, CatalogDto catalogDto)
+        public async Task<CatalogDto> UpdateCatalogAsync(CatalogDto catalogDto)
         {
             Catalog catalog = _mapper.Map<Catalog>(catalogDto);
-            catalog.Id = id;
             _repository.Update(catalog);
             await _context.SaveChangesAsync();
             return catalogDto;

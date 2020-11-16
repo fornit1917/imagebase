@@ -11,7 +11,7 @@ namespace ImageBase.WebApp.Services.Interfaces
     {
         Task<IEnumerable<CatalogDto>> GetCatalogsAsync();
         Task<CatalogDto> GetCatalogAsync(int id);
-        Task<CatalogDto> UpdateCatalogAsync(int id, CatalogDto catalogDto);        
+        Task<CatalogDto> UpdateCatalogAsync(CatalogDto catalogDto);        
         Task<bool> DeleteCatalogAsync(int id);
         Task CreateCatalogAsync(CatalogDto catalogDto);
         Task<IEnumerable<CatalogDto>> GetSubCatalogsAsync(int id);
