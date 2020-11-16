@@ -18,16 +18,12 @@ namespace ImageBase.WebApp.Controllers
     [ApiController]
     public class CatalogsController : ControllerBase
     {
-        private readonly AspPostgreSQLContext _context;
         private readonly ICatalogService _catalogService;
         private readonly ILogger<CatalogsController> _logger;
-        private readonly IMapper _mapper;
 
-        public CatalogsController(AspPostgreSQLContext context, ILogger<CatalogsController> logger, IMapper mapper, ICatalogService catalogService)
+        public CatalogsController(ILogger<CatalogsController> logger, ICatalogService catalogService)
         {
-            _context = context;
             _logger = logger;
-            _mapper = mapper;
             _catalogService = catalogService;
         }
 
@@ -65,7 +61,7 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCatalog(int id, CatalogDto catalog)
+        public async Task<ActionResult<CatalogDto>> UpdateCatalog(int id, CatalogDto catalog)
         {
             if (id != catalog.Id)
             {
@@ -76,7 +72,7 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Catalog>> PostCatalog(CatalogDto catalog)
+        public async Task<ActionResult<CatalogDto>> CreateCatalog(CatalogDto catalog)
         {
             try
             {
@@ -90,7 +86,7 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Catalog>> DeleteCatalog(int id)
+        public async Task<ActionResult<CatalogDto>> DeleteCatalog(int id)
         {
             var catalog = await _catalogService.DeleteCatalogAsync(id);
             if (catalog == false)
@@ -101,7 +97,7 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpDelete("image/{id}")]
-        public async Task<ActionResult<Catalog>> DeleteImageFromCatalog(UpdateImageCatalogDto deleteimage)
+        public async Task<ActionResult<CatalogDto>> DeleteImageFromCatalog(UpdateImageCatalogDto deleteimage)
         {
             try
             {
@@ -126,7 +122,7 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpPost("image")]
-        public async Task<ActionResult<Catalog>> PostImage(UpdateImageCatalogDto catalog)
+        public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto catalog)
         {
             try
             {
