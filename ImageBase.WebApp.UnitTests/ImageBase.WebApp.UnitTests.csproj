@@ -18,4 +18,8 @@
     <ProjectReference Include="..\ImageBase.WebApp\ImageBase.WebApp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ServicesTests\" />
+  </ItemGroup>
+
 </Project>

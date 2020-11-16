@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ImageBase.WebApp.UnitTests.FakeManagers;
 
-namespace ImageBase.WebApp.UnitTests
+namespace ImageBase.WebApp.UnitTests.ControllersTest
 {
     public class AuthenticationControllerTests
     {
