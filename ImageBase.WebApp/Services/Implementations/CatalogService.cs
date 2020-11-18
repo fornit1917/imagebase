@@ -28,20 +28,14 @@ namespace ImageBase.WebApp.Services.Implementations
         public async Task<ServiceResponse<CatalogDto>> CreateCatalogAsync(CatalogDto catalogDto)
         {
             ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();
-            IEnumerable<Catalog> catalogs;
-            if (catalogDto.ParentCatalogId == null)
-                catalogs = await _repository.GetCatalogsByUser(catalogDto.UserId);
-            else
-                catalogs = await _repository.GetSubCatalogsAsync((int)catalogDto.ParentCatalogId);
+            Catalog catalog = _mapper.Map<Catalog>(catalogDto);
 
-            if (catalogs.Any(c => c.Name == catalogDto.Name))
+            if (await _repository.HasChildWithNameAsync(catalog))
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = $"The catalog with a name {catalogDto.Name} already exists";
                 return serviceResponse;
             }
-
-            Catalog catalog = _mapper.Map<Catalog>(catalogDto);
             _repository.Add(catalog);
             await _context.SaveChangesAsync();
             serviceResponse.Data = catalogDto;
@@ -78,24 +72,19 @@ namespace ImageBase.WebApp.Services.Implementations
         public async Task<ServiceResponse<CatalogDto>> UpdateCatalogAsync(CatalogDto catalogDto)
         {
             ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();
-            IEnumerable<Catalog> catalogs;
-            if (catalogDto.ParentCatalogId == null)
-                catalogs = await _repository.GetCatalogsByUser(catalogDto.UserId);
-            else
-                catalogs = await _repository.GetSubCatalogsAsync((int)catalogDto.ParentCatalogId);
+            Catalog catalog = _mapper.Map<Catalog>(catalogDto);
 
-            if (!catalogs.Any(c => c.Name == catalogDto.Name))
+            if (await _repository.HasChildWithNameAsync(catalog))
             {
-                Catalog catalog = _mapper.Map<Catalog>(catalogDto);
-                _repository.Update(catalog);
-                await _context.SaveChangesAsync();
+                serviceResponse.Success = false;
+                serviceResponse.Message = $"Catalog with a name {catalogDto.Name} already exists";
 
-                serviceResponse.Data = catalogDto;
                 return serviceResponse;
             }
-            serviceResponse.Success = false;
-            serviceResponse.Message = $"Catalog with a name {catalogDto.Name} already exists";
+            _repository.Update(catalog);
+            await _context.SaveChangesAsync();
 
+            serviceResponse.Data = catalogDto;
             return serviceResponse;
         }
 
@@ -124,10 +113,25 @@ namespace ImageBase.WebApp.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<CatalogDto>> GetCatalogsByUser(string userId = null)
+        public async Task<IEnumerable<CatalogDto>> GetCatalogsByUserAsync(string userId = null)
         {
-            IEnumerable<CatalogDto> catalogsDto = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetCatalogsByUser(userId));
+            IEnumerable<CatalogDto> catalogsDto = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetCatalogsByUserAsync(userId));
             return catalogsDto;
+        }
+
+        public async Task<ServiceResponse<IEnumerable<CatalogDto>>> GetSubCatalogsByUserAsync(int parentId, string userId)
+        {
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = new ServiceResponse<IEnumerable<CatalogDto>>();
+
+            if (await _repository.HasCatalogWithUserIdAsync(parentId, userId))
+                serviceResponse.Data = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetSubCatalogsAsync(parentId));
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Access is forbidden";
+            }
+
+            return serviceResponse;
         }
     }
 }

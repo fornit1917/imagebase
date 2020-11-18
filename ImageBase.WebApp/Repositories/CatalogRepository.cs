@@ -93,9 +93,25 @@ namespace ImageBase.WebApp.Repositories
             return await _context.ImageCatalogs.Where(ic => ic.ImageId == idImg && ic.CatalogId == idCat).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Catalog>> GetCatalogsByUser(string userId)
+        public async Task<IEnumerable<Catalog>> GetCatalogsByUserAsync(string userId)
         {
             return await _context.Catalogs.Where(c => c.UserId == userId && c.ParentCatalogId == null).ToArrayAsync();
+        }
+
+        public async Task<bool> HasChildWithNameAsync(Catalog catalog)
+        {
+            IQueryable<Catalog> query = null;
+            if (catalog.ParentCatalogId == null)
+                query = _context.Catalogs.Where(c => c.UserId == catalog.UserId && c.ParentCatalogId == null);
+            else
+                query = _context.Catalogs.Where(c => c.ParentCatalogId == catalog.ParentCatalogId);
+
+            return await query.AnyAsync(c => c.Name == catalog.Name);
+        }
+
+        public async Task<bool> HasCatalogWithUserIdAsync(int parentId, string userId)
+        {
+            return await _context.Catalogs.Where(c => c.Id == parentId && (c.UserId == userId || c.UserId == null)).AnyAsync();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace ImageBase.WebApp.Controllers
             var user = await _userManager.FindByEmailAsync(User.Identity.Name);
             if (user != null)
                 roles = (List<string>)await _userManager.GetRolesAsync(user);
-            
+
             return View(roles);
         }
     }

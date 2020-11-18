@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ImageBase.WebApp.Data.Models
 {
     public class Catalog: BaseEntity<int>
-    {        
+    {
         public string Name { get; set; }
         public int? ParentCatalogId { get; set; }
         public string UserId { get; set; }
