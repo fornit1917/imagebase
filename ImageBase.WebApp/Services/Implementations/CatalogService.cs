@@ -28,7 +28,6 @@ namespace ImageBase.WebApp.Services.Implementations
         public async Task CreateCatalogAsync(CatalogDto catalogDto)
         {
             Catalog catalog = _mapper.Map<Catalog>(catalogDto);
-            _context.Entry(catalog).State = EntityState.Added;
             _repository.Add(catalog);
             await _context.SaveChangesAsync();
         }
@@ -62,7 +61,6 @@ namespace ImageBase.WebApp.Services.Implementations
         public async Task<CatalogDto> UpdateCatalogAsync(int id, CatalogDto catalogDto)
         {
             Catalog catalog = _mapper.Map<Catalog>(catalogDto);
-            _context.Entry(catalog).State = EntityState.Modified;
             catalog.Id = id;
             _repository.Update(catalog);
             await _context.SaveChangesAsync();
@@ -72,8 +70,6 @@ namespace ImageBase.WebApp.Services.Implementations
         public async Task DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto)
         {
             ImageCatalog imageCatalog = await _repository.GetImageCatalogByIdFKAsync(imageCatalogDto.ImageId, imageCatalogDto.CatalogId);
-
-            _context.Entry(imageCatalog).State = EntityState.Deleted;
             _repository.DeleteImageFromCatalog(imageCatalog);
             await _context.SaveChangesAsync();
         }
@@ -92,7 +88,6 @@ namespace ImageBase.WebApp.Services.Implementations
                 ImageId = imageCatalogDto.ImageId,
                 CatalogId = imageCatalogDto.CatalogId
             };
-            _context.Entry(imageCatalog).State = EntityState.Added;
             _repository.AddImageToCatalog(imageCatalog);
             await _context.SaveChangesAsync();
         }

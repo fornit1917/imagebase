@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBase.ImageHash", "Imag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBase.HashBase", "ImageBase.HashBase\ImageBase.HashBase.csproj", "{9838FD8D-EE90-4770-99D8-1D8E8D33888B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageBase.Common", "ImageBase.Common\ImageBase.Common.csproj", "{790013E0-14AA-4D46-A248-24788E4BCC83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBase.Common", "ImageBase.Common\ImageBase.Common.csproj", "{790013E0-14AA-4D46-A248-24788E4BCC83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageBase.Common.UnitTests", "ImageBase.Common.UnitTests\ImageBase.Common.UnitTests.csproj", "{15AFC029-CE24-43B1-82C9-B4C1EF4935F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBase.Common.UnitTests", "ImageBase.Common.UnitTests\ImageBase.Common.UnitTests.csproj", "{15AFC029-CE24-43B1-82C9-B4C1EF4935F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageBase.WebApp.UnitTests", "ImageBase.WebApp.UnitTests\ImageBase.WebApp.UnitTests.csproj", "{0B6BEB91-7E92-4848-949E-99633DB4A54B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBase.WebApp.UnitTests", "ImageBase.WebApp.UnitTests\ImageBase.WebApp.UnitTests.csproj", "{0B6BEB91-7E92-4848-949E-99633DB4A54B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

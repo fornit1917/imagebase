@@ -30,29 +30,29 @@ namespace ImageBase.WebApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CatalogDto>>> GetCatalogs()
         {
-            var allCatalog = await _catalogService.GetCatalogsAsync();
-            if (allCatalog == null)
+            IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetCatalogsAsync();
+            if (allCatalogs == null)
             {
                 return NotFound();
             }
-            return Ok(allCatalog);
+            return Ok(allCatalogs);
         }
 
         [HttpGet("sub/{id}")]
         public async Task<ActionResult<IEnumerable<CatalogDto>>> GetSubCatalogsAsync(int id)
         {
-            var allCatalog = await _catalogService.GetSubCatalogsAsync(id);
-            if (allCatalog == null)
+            IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetSubCatalogsAsync(id);
+            if (allCatalogs == null)
             {
                 return NotFound();
             }
-            return Ok(allCatalog);
+            return Ok(allCatalogs);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CatalogDto>> GetCatalog(int id)
         {
-            var catalog = await _catalogService.GetCatalogAsync(id);
+            CatalogDto catalog = await _catalogService.GetCatalogAsync(id);
             if (catalog == null)
             {
                 return NotFound();
@@ -88,7 +88,7 @@ namespace ImageBase.WebApp.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<CatalogDto>> DeleteCatalog(int id)
         {
-            var catalog = await _catalogService.DeleteCatalogAsync(id);
+            bool catalog = await _catalogService.DeleteCatalogAsync(id);
             if (catalog == false)
             {
                 return NotFound();
@@ -113,20 +113,20 @@ namespace ImageBase.WebApp.Controllers
         [HttpGet("image/{id}")]
         public async Task<ActionResult<IEnumerable<ImageDto>>> GetImagesByCatalog(int id, int offset, int limit)
         {
-            var allCatalog = await _catalogService.GetImagesByCatalogAsync(id,offset,limit);
-            if (allCatalog == null)
+            var allImages = await _catalogService.GetImagesByCatalogAsync(id,offset,limit);
+            if (allImages == null)
             {
                 return NotFound();
             }
-            return Ok(allCatalog);
+            return Ok(allImages);
         }
 
         [HttpPost("image")]
-        public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto catalog)
+        public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto image)
         {
             try
             {
-                await _catalogService.AddImageToCatalogAsync(catalog);
+                await _catalogService.AddImageToCatalogAsync(image);
             }
             catch (Exception e)
             {
