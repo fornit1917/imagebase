@@ -88,8 +88,8 @@ namespace ImageBase.WebApp.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<CatalogDto>> DeleteCatalog(int id)
         {
-            bool catalog = await _catalogService.DeleteCatalogAsync(id);
-            if (catalog == false)
+            bool isCatalogDeleted = await _catalogService.DeleteCatalogAsync(id);
+            if (isCatalogDeleted == false)
             {
                 return NotFound();
             }
