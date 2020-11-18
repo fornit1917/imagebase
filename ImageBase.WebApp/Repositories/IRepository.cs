@@ -11,7 +11,7 @@ namespace ImageBase.WebApp.Repositories
         Task<bool> DeleteAsync(TId id);
         Task<T> GetAsync(TId id);
         Task<IEnumerable<T>> GetAllAsync();
-        void Add(T obj);
+        TId Add(T obj);
         T Update(T obj);        
     }
 }

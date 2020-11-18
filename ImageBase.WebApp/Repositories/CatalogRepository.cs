@@ -16,9 +16,10 @@ namespace ImageBase.WebApp.Repositories
         {
             _context = context;
         }
-        public void Add(Catalog obj)
+        public int Add(Catalog obj)
         {
             _context.Catalogs.Add(obj);
+            return obj.Id;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -90,6 +91,11 @@ namespace ImageBase.WebApp.Repositories
         public async Task<ImageCatalog> GetImageCatalogByIdFKAsync(long idImg, int idCat)
         {
             return await _context.ImageCatalogs.Where(ic => ic.ImageId == idImg && ic.CatalogId == idCat).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Catalog>> GetCatalogsByUser(string userId)
+        {
+            return await _context.Catalogs.Where(c => c.UserId == userId && c.ParentCatalogId == null).ToArrayAsync();
         }
     }
 }

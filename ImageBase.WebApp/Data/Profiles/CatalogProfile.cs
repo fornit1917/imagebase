@@ -16,7 +16,7 @@ namespace ImageBase.WebApp.Data.Profiles
             CreateMap<CatalogDto, Catalog>().ReverseMap();
             CreateMap<AddImageDto, Image>()
                 .ForMember(map => map.ImageCatalogs, map => map.MapFrom(i => i.CatalogsIds));
-            CreateMap<long, ImageCatalog>()
+            CreateMap<int, ImageCatalog>()
                 .ForMember(map => map.CatalogId, map => map.MapFrom(c => c));
             CreateMap<PaginationListDto<Image>, PaginationListDto<ImageDto>>();
         }

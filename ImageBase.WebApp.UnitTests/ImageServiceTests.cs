@@ -31,10 +31,11 @@ namespace ImageBase.WebApp.UnitTests
         [Fact]
         public async Task CreatImageAsyncCallsMethodOfRepository_And_SavesChanges()
         {
-            await _service.CreateImageAsync(new AddImageDto());
+            ImageDto imageDto = await _service.CreateImageAsync(new AddImageDto());
 
             _imageRepositoryMock.Verify(r => r.Add(It.IsAny<Image>()), Times.Once);
             _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
+            Assert.NotNull(imageDto);
         }
 
     }

@@ -8,6 +8,6 @@ namespace ImageBase.WebApp.Services.Interfaces
 {
     public interface IImageService
     {
-        Task CreateImageAsync(AddImageDto imageDto);
+        Task<ImageDto> CreateImageAsync(AddImageDto imageDto);
     }
 }

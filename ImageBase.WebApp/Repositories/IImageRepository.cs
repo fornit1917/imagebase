@@ -8,5 +8,6 @@ namespace ImageBase.WebApp.Repositories
 {
     public interface IImageRepository: IRepository<Image, long>
     {
+        Task<bool> IsImageTitleAlreadyExists(int id, string title);
     }
 }

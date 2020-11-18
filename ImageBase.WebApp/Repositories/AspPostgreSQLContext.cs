@@ -21,7 +21,7 @@ namespace ImageBase.WebApp.Repositories
         {
         }
 
-        public AspPostgreSQLContext()
+        protected AspPostgreSQLContext()
         {
         }
 

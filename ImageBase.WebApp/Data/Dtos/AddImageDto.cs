@@ -10,6 +10,6 @@ namespace ImageBase.WebApp.Data.Dtos
         public string Title { get; set; }
         public string Description { get; set; }
         public string KeyWords { get; set; }
-        public List<long> CatalogsIds { get; set; }        
+        public List<int> CatalogsIds { get; set; }        
     }
 }

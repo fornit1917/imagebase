@@ -15,9 +15,10 @@ namespace ImageBase.WebApp.Repositories
             _context = context;
         }
 
-        public void Add(Image obj)
+        public long Add(Image obj)
         {
             _context.Images.Add(obj);
+            return obj.Id;
         }
 
         public async Task<bool> DeleteAsync(long id)
@@ -46,6 +47,15 @@ namespace ImageBase.WebApp.Repositories
         {
             _context.Images.Update(obj);
             return obj;
+        }
+
+        public async Task<bool> IsImageTitleAlreadyExists(int id, string title)
+        {
+            bool isExist = await _context.ImageCatalogs.Where(ic => ic.CatalogId == id)
+                .Include(ic => ic.Image)
+                .Select(i => i.Image)
+                .AnyAsync(i => i.Title == title);
+            return isExist;
         }
     }
 }

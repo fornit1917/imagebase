@@ -11,12 +11,13 @@ namespace ImageBase.WebApp.Services.Interfaces
     {
         Task<IEnumerable<CatalogDto>> GetCatalogsAsync();
         Task<CatalogDto> GetCatalogAsync(int id);
-        Task<CatalogDto> UpdateCatalogAsync(CatalogDto catalogDto);        
+        Task<ServiceResponse<CatalogDto>> UpdateCatalogAsync(CatalogDto catalogDto);
         Task<bool> DeleteCatalogAsync(int id);
-        Task CreateCatalogAsync(CatalogDto catalogDto);
+        Task<ServiceResponse<CatalogDto>> CreateCatalogAsync(CatalogDto catalogDto);
         Task<IEnumerable<CatalogDto>> GetSubCatalogsAsync(int id);
         Task AddImageToCatalogAsync(UpdateImageCatalogDto imageCatalogDto);
         Task<PaginationListDto<ImageDto>> GetImagesByCatalogAsync(int id, int offset, int limit);
         Task DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto);
+        Task<IEnumerable<CatalogDto>> GetCatalogsByUser(string userId);
     }
 }
