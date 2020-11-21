@@ -25,13 +25,24 @@ namespace ImageBase.WebApp.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task CreateCatalogAsync(CatalogDto catalogDto)
+        public async Task<ServiceResponse<CatalogDto>> CreateCatalogAsync(CatalogDto catalogDto)
         {
+            ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();
             Catalog catalog = _mapper.Map<Catalog>(catalogDto);
+
+            if (await _repository.HasChildWithNameAsync(catalog))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = $"The catalog with a name {catalogDto.Name} already exists";
+                return serviceResponse;
+            }
             _repository.Add(catalog);
             await _context.SaveChangesAsync();
+            serviceResponse.Data = catalogDto;
+
+            return serviceResponse;
         }
-        
+
         public async Task<bool> DeleteCatalogAsync(int id)
         {
             bool flag = await _repository.DeleteAsync(id);
@@ -58,12 +69,23 @@ namespace ImageBase.WebApp.Services.Implementations
             return catalogsDto;
         }
 
-        public async Task<CatalogDto> UpdateCatalogAsync(CatalogDto catalogDto)
+        public async Task<ServiceResponse<CatalogDto>> UpdateCatalogAsync(CatalogDto catalogDto)
         {
+            ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();
             Catalog catalog = _mapper.Map<Catalog>(catalogDto);
+
+            if (await _repository.HasChildWithNameAsync(catalog))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = $"Catalog with a name {catalogDto.Name} already exists";
+
+                return serviceResponse;
+            }
             _repository.Update(catalog);
             await _context.SaveChangesAsync();
-            return catalogDto;
+
+            serviceResponse.Data = catalogDto;
+            return serviceResponse;
         }
 
         public async Task DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto)
@@ -89,6 +111,27 @@ namespace ImageBase.WebApp.Services.Implementations
             };
             _repository.AddImageToCatalog(imageCatalog);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<CatalogDto>> GetCatalogsByUserAsync(string userId = null)
+        {
+            IEnumerable<CatalogDto> catalogsDto = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetCatalogsByUserAsync(userId));
+            return catalogsDto;
+        }
+
+        public async Task<ServiceResponse<IEnumerable<CatalogDto>>> GetSubCatalogsByUserAsync(int parentId, string userId)
+        {
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = new ServiceResponse<IEnumerable<CatalogDto>>();
+
+            if (await _repository.HasCatalogWithUserIdAsync(parentId, userId))
+                serviceResponse.Data = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetSubCatalogsAsync(parentId));
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Access is forbidden";
+            }
+
+            return serviceResponse;
         }
     }
 }

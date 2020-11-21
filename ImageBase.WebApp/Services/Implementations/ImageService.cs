@@ -23,11 +23,12 @@ namespace ImageBase.WebApp.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task CreateImageAsync(AddImageDto imageDto)
+        public async Task<ImageDto> CreateImageAsync(AddImageDto addImageDto)
         {
-            Image image = _mapper.Map<Image>(imageDto);
-            _repository.Add(image);
+            Image image = _mapper.Map<Image>(addImageDto);
+            image.Id = _repository.Add(image);
             await _context.SaveChangesAsync();
+            return _mapper.Map<ImageDto>(image);
         }
     }
 }

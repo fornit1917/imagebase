@@ -16,9 +16,10 @@ namespace ImageBase.WebApp.Repositories
         {
             _context = context;
         }
-        public void Add(Catalog obj)
+        public int Add(Catalog obj)
         {
             _context.Catalogs.Add(obj);
+            return obj.Id;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -90,6 +91,27 @@ namespace ImageBase.WebApp.Repositories
         public async Task<ImageCatalog> GetImageCatalogByIdFKAsync(long idImg, int idCat)
         {
             return await _context.ImageCatalogs.Where(ic => ic.ImageId == idImg && ic.CatalogId == idCat).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Catalog>> GetCatalogsByUserAsync(string userId)
+        {
+            return await _context.Catalogs.Where(c => c.UserId == userId && c.ParentCatalogId == null).ToArrayAsync();
+        }
+
+        public async Task<bool> HasChildWithNameAsync(Catalog catalog)
+        {
+            IQueryable<Catalog> query = null;
+            if (catalog.ParentCatalogId == null)
+                query = _context.Catalogs.Where(c => c.UserId == catalog.UserId && c.ParentCatalogId == null);
+            else
+                query = _context.Catalogs.Where(c => c.ParentCatalogId == catalog.ParentCatalogId);
+
+            return await query.AnyAsync(c => c.Name == catalog.Name);
+        }
+
+        public async Task<bool> HasCatalogWithUserIdAsync(int parentId, string userId)
+        {
+            return await _context.Catalogs.Where(c => c.Id == parentId && (c.UserId == userId || c.UserId == null)).AnyAsync();
         }
     }
 }

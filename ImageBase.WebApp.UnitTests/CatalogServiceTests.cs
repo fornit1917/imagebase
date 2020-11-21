@@ -10,6 +10,7 @@ using ImageBase.WebApp.Data.Dtos;
 using ImageBase.WebApp.Data.Models;
 using ImageBase.WebApp.Data.Profiles;
 using ImageBase.WebApp.Repositories;
+using ImageBase.WebApp.Services;
 using ImageBase.WebApp.Services.Implementations;
 using ImageBase.WebApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,32 @@ namespace ImageBase.WebApp.UnitTests
             _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
         }
 
+        [Fact]
+        public async Task CreateCatalogAsyncReturnsServiceResponse_IfCatalogWithNameExists()
+        {
+            CatalogDto catalogDto = new CatalogDto();
+            _catalogRepositoryMock.Setup(r => r.HasChildWithNameAsync(It.IsAny<Catalog>()))
+                .Returns(Task.FromResult(true));
+
+            ServiceResponse<CatalogDto> serviceResponse = await _service.CreateCatalogAsync(catalogDto);
+
+            Assert.False(serviceResponse.Success);
+            Assert.NotNull(serviceResponse.Message);
+        }
+
+        [Fact]
+        public async Task CreateCatalogAsyncReturnsServiceResponse_IfCatalogWithNameDoesntExsist()
+        {
+            CatalogDto catalogDto = new CatalogDto();
+            _catalogRepositoryMock.Setup(r => r.HasChildWithNameAsync(It.IsAny<Catalog>()))
+                .Returns(Task.FromResult(false));
+
+            ServiceResponse<CatalogDto> serviceResponse = await _service.CreateCatalogAsync(catalogDto);
+
+            Assert.True(serviceResponse.Success);
+            Assert.Equal(serviceResponse.Data, catalogDto);
+        }
+
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
@@ -99,11 +126,11 @@ namespace ImageBase.WebApp.UnitTests
                 Name = "catalog 1",
             };
 
-            CatalogDto catalogDto = await _service.UpdateCatalogAsync(catalog);
+            ServiceResponse<CatalogDto> catalogDto = await _service.UpdateCatalogAsync(catalog);
 
             _catalogRepositoryMock.Verify(r => r.Update(It.IsAny<Catalog>()), Times.Once);
             _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
-            Assert.NotNull(catalogDto);            
+            Assert.NotNull(catalogDto);
         }
 
         [Fact]
@@ -164,6 +191,40 @@ namespace ImageBase.WebApp.UnitTests
 
             Assert.NotNull(catalogsDto);
             _catalogRepositoryMock.Verify(r => r.GetSubCatalogsAsync(id), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetCatalogsByUserAsyncCallsMethodOfRepository_And_ReturnsCatalogsDto()
+        {
+            var id = "user id";
+
+            var catalogsDto = (List<CatalogDto>)await _service.GetCatalogsByUserAsync(id);
+
+            Assert.NotNull(catalogsDto);
+            _catalogRepositoryMock.Verify(r => r.GetCatalogsByUserAsync(id), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetSubCatalogsByUserAsync_IfCatalogDoesntExist()
+        {
+            _catalogRepositoryMock.Setup(c => c.HasCatalogWithUserIdAsync(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(false));
+
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsByUserAsync(It.IsAny<int>(), It.IsAny<string>());
+
+            Assert.NotNull(serviceResponse);
+            Assert.False(serviceResponse.Success);
+            Assert.NotNull(serviceResponse.Message);
+        }
+
+        [Fact]
+        public async Task GetSubCatalogsByUserAsync_IfCatalogExists()
+        {
+            _catalogRepositoryMock.Setup(c => c.HasCatalogWithUserIdAsync(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsByUserAsync(It.IsAny<int>(), It.IsAny<string>());
+
+            Assert.NotNull(serviceResponse);
+            Assert.True(serviceResponse.Success);
         }
     }
 }

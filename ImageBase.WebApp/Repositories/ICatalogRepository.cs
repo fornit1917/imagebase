@@ -14,5 +14,8 @@ namespace ImageBase.WebApp.Repositories
         void AddImageToCatalog(ImageCatalog imageCatalog);
         void DeleteImageFromCatalog(ImageCatalog imageCatalog);
         Task<ImageCatalog> GetImageCatalogByIdFKAsync(long idImg, int idCat);
+        Task<IEnumerable<Catalog>> GetCatalogsByUserAsync(string userId);
+        Task<bool> HasChildWithNameAsync(Catalog catalog);
+        Task<bool> HasCatalogWithUserIdAsync(int parentId, string userId);
     }
 }
