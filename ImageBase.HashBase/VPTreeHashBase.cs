@@ -1,7 +1,5 @@
 ﻿using ImageBase.Common;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ImageBase.HashBase
 {
@@ -20,13 +18,13 @@ namespace ImageBase.HashBase
             var resultIDs = new List<long>(limit);
 
             SearchAllIDs(Root, allItems, hash, radius);
-            allItems.Sort(new VPTree.HashComparer(new HashItem() { ObjectId = -1, Hash = hash }));
-            
+            allItems.Sort(new HashComparer(new HashItem() { ObjectId = -1, Hash = hash }));
+
             for (int i = 0; i < limit && i < allItems.Count; i++)
             {
                 resultIDs.Add(allItems[i].ObjectId);
             }
-            
+
             return resultIDs;
         }
 
@@ -58,11 +56,13 @@ namespace ImageBase.HashBase
 
             if (node.Outside != null)
             {
-                SearchAllIDs(node.Outside, resultIDs, hash, radius);
+                if ((centerToPointDistance + radius) >= node.Mu)
+                    SearchAllIDs(node.Outside, resultIDs, hash, radius);
             }
             if (node.Inside != null)
             {
-                SearchAllIDs(node.Inside, resultIDs, hash, radius);
+                if ((centerToPointDistance - radius) < node.Mu)
+                    SearchAllIDs(node.Inside, resultIDs, hash, radius);
             }
             if (centerToPointDistance <= radius)
             {

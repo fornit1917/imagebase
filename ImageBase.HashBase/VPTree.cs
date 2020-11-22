@@ -52,6 +52,7 @@ namespace ImageBase.HashBase
             if (itemCount == 0)
                 return;
 
+            //to separate list of items on 2 halves
             int median = itemCount / 2;
 
             items.Sort(new HashComparer(VantagePoint));
@@ -62,27 +63,6 @@ namespace ImageBase.HashBase
                 Inside = new VPTree(items.GetRange(0, median));
 
             Outside = new VPTree(items.GetRange(median, itemCount - median));
-        }
-
-        public class HashComparer : IComparer<HashItem>
-        {
-            private readonly HashItem vantagePoint;
-
-            public HashComparer(HashItem vantagePoint)
-            {
-                this.vantagePoint = vantagePoint;
-            }
-
-            public int Compare(HashItem x, HashItem y)
-            {
-                if (x.Hash != y.Hash)
-                {
-                    var result = HammingDistance.Calculate(x.Hash, vantagePoint.Hash).CompareTo(HammingDistance.Calculate(y.Hash, vantagePoint.Hash));
-                    if (result != 0) return result;
-                }
-
-                return x.ObjectId.CompareTo(y.ObjectId);
-            }
         }
     }
 }
