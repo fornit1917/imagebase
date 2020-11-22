@@ -10,7 +10,7 @@ namespace ImageBase.HashBase
 
         public void CreateIndex(IEnumerable<HashItem> items)
         {
-            throw new NotImplementedException();
+            Root = new VPTree(items);
         }
 
         public IReadOnlyList<long> Search(long hash, int radius, int limit)
