@@ -9,10 +9,9 @@ namespace ImageBase.HashBase.UnitTests
         public static IEnumerable<object[]> Strings =>
             new List<object[]>
             {
-                new object[] {37,3,10,new List<long>() { 1, 3, 4, 12, 13 } },
-                new object[] {511,2,10,new List<long>() { 7, 8, 9, 10, 11 } },
-                new object[] {31,4,10,new List<long>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
-                new object[] {31,4,3,new List<long>() { 4, 5, 6 } }
+                new object[] {37,2,10,new List<long>() { 1, 3, 4, 5 } },
+                new object[] {511,2,10,new List<long>() { 7, 8, 9 } },
+                new object[] {31,3,10,new List<long>() { 2, 3, 5, 6, 7, 8 } }
             };
 
         [Theory]
@@ -25,15 +24,13 @@ namespace ImageBase.HashBase.UnitTests
                 new HashItem() { ObjectId = 2, Hash = 3 },
                 new HashItem() { ObjectId = 3, Hash = 7 },
                 new HashItem() { ObjectId = 4, Hash = 37 },
-                new HashItem() { ObjectId = 5, Hash = 513 },
+                new HashItem() { ObjectId = 5, Hash = 53 },
                 new HashItem() { ObjectId = 6, Hash = 63 },
                 new HashItem() { ObjectId = 7, Hash = 127 },
                 new HashItem() { ObjectId = 8, Hash = 255 },
                 new HashItem() { ObjectId = 9, Hash = 511},
-                new HashItem() { ObjectId = 10, Hash = 1023 },
-                new HashItem() { ObjectId = 11, Hash = 2047 },
-                new HashItem() { ObjectId = 12, Hash = 53 },
-                new HashItem() { ObjectId = 13, Hash = 32 },
+                new HashItem() { ObjectId = 10, Hash = 512},
+                new HashItem() { ObjectId = 11, Hash = 500},
             };
             VPTreeHashBase vpTreeHashBase = new VPTreeHashBase();
             vpTreeHashBase.CreateIndex(hashes);

@@ -48,7 +48,7 @@ namespace ImageBase.HashBase
                 {
                     SearchInNode(node.Inside, resultIDs, hash, radius);
                 }
-                if (centerToPointDistance < radius)
+                if (centerToPointDistance <= radius)
                 {
                     resultIDs.Add(node.VantagePoint.ObjectId);
                 }
@@ -63,7 +63,7 @@ namespace ImageBase.HashBase
             {
                 SearchInNode(node.Inside, resultIDs, hash, radius);
             }
-            if (centerToPointDistance < radius)
+            if (centerToPointDistance <= radius)
             {
                 resultIDs.Add(node.VantagePoint.ObjectId);
             }
