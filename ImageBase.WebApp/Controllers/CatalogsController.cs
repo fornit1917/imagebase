@@ -11,10 +11,14 @@ using ImageBase.WebApp.Repositories;
 using Microsoft.Extensions.Logging;
 using ImageBase.WebApp.Services.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using ImageBase.WebApp.Data.Models.Authentication;
+using ImageBase.WebApp.Services;
 
 namespace ImageBase.WebApp.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class CatalogsController : ControllerBase
     {
@@ -38,7 +42,19 @@ namespace ImageBase.WebApp.Controllers
             return Ok(allCatalogs);
         }
 
-        [HttpGet("sub/{id}")]
+        [Route("autor/{userId}")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CatalogDto>>> GetCatalogsByUser(string userId)
+        {
+            IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetCatalogsByUserAsync(userId);
+            if (allCatalogs == null)
+            {
+                return NotFound();
+            }
+            return Ok(allCatalogs);
+        } 
+
+        [HttpGet("sub/{id:int}")]
         public async Task<ActionResult<IEnumerable<CatalogDto>>> GetSubCatalogsAsync(int id)
         {
             IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetSubCatalogsAsync(id);
@@ -49,7 +65,29 @@ namespace ImageBase.WebApp.Controllers
             return Ok(allCatalogs);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("autor/sub/{parentId:int}/{userId}")]
+        public async Task<ActionResult<IEnumerable<CatalogDto>>> GetSubCatalogsByUserAsync(int parentId, string userId)
+        {
+            ServiceResponse<IEnumerable<CatalogDto>> allCatalogs = await _catalogService.GetSubCatalogsByUserAsync(parentId, userId);
+            if (allCatalogs == null)
+            {
+                return NotFound();
+            }
+            return Ok(allCatalogs);
+        }
+
+        [HttpGet("image/{id:int}")]
+        public async Task<ActionResult<IEnumerable<ImageDto>>> GetImagesByCatalog(int id, int offset = 0, int limit = 4)
+        {
+            PaginationListDto<ImageDto> allImages = await _catalogService.GetImagesByCatalogAsync(id, offset, limit);
+            if (allImages == null)
+            {
+                return NotFound();
+            }
+            return Ok(allImages);
+        }
+
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<CatalogDto>> GetCatalog(int id)
         {
             CatalogDto catalog = await _catalogService.GetCatalogAsync(id);
@@ -61,13 +99,14 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<CatalogDto>> UpdateCatalog(int id, CatalogDto catalog)
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<ActionResult<CatalogDto>> UpdateCatalog(CatalogDto catalog)
         {
-            if (id != catalog.Id)
+            if (catalog == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-            var updatecatalog = await _catalogService.UpdateCatalogAsync(id,catalog);
+            var updatecatalog = await _catalogService.UpdateCatalogAsync(catalog);
             return Ok(updatecatalog);
         }
 
@@ -85,42 +124,6 @@ namespace ImageBase.WebApp.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<CatalogDto>> DeleteCatalog(int id)
-        {
-            bool isCatalogDeleted = await _catalogService.DeleteCatalogAsync(id);
-            if (isCatalogDeleted == false)
-            {
-                return NotFound();
-            }
-            return Ok();
-        }
-
-        [HttpDelete("image/{id}")]
-        public async Task<ActionResult<CatalogDto>> DeleteImageFromCatalog(UpdateImageCatalogDto deleteimage)
-        {
-            try
-            {
-                await _catalogService.DeleteImageFromCatalogAsync(deleteimage);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-            return Ok();
-        }
-
-        [HttpGet("image/{id}")]
-        public async Task<ActionResult<IEnumerable<ImageDto>>> GetImagesByCatalog(int id, int offset, int limit)
-        {
-            var allImages = await _catalogService.GetImagesByCatalogAsync(id,offset,limit);
-            if (allImages == null)
-            {
-                return NotFound();
-            }
-            return Ok(allImages);
-        }
-
         [HttpPost("image")]
         public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto image)
         {
@@ -134,5 +137,33 @@ namespace ImageBase.WebApp.Controllers
             }
             return Ok();
         }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<ActionResult<CatalogDto>> DeleteCatalog(int id)
+        {
+            bool isCatalogDeleted = await _catalogService.DeleteCatalogAsync(id);
+            if (isCatalogDeleted == false)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
+
+        [HttpDelete("image/{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<ActionResult<CatalogDto>> DeleteImageFromCatalog(UpdateImageCatalogDto deleteimage)
+        {
+            try
+            {
+                await _catalogService.DeleteImageFromCatalogAsync(deleteimage);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+            return Ok();
+        }      
+        
     }
 }
