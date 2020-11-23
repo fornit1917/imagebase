@@ -113,15 +113,20 @@ namespace ImageBase.WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult<CatalogDto>> CreateCatalog(CatalogDto catalog)
         {
+            ServiceResponse<CatalogDto> createcatalog;
             try
             {
-                await _catalogService.CreateCatalogAsync(catalog);
+                createcatalog = await _catalogService.CreateCatalogAsync(catalog);
             }
             catch (Exception e)
             {
                 return BadRequest(e);
             }
-            return Ok();
+            if (createcatalog == null)
+            {
+                return BadRequest();
+            }
+            return Ok(createcatalog);
         }
 
         [HttpPost("image")]
