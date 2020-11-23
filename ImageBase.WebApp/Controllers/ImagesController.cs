@@ -10,10 +10,12 @@ using ImageBase.WebApp.Repositories;
 using ImageBase.WebApp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ImageBase.WebApp.Data.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ImageBase.WebApp.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ImagesController : ControllerBase
     {
@@ -29,15 +31,20 @@ namespace ImageBase.WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult<ImageDto>> CreateImage(AddImageDto image)
         {
+            ImageDto createdImage;
             try
             {
-                await _imagesService.CreateImageAsync(image);
+                createdImage =  await _imagesService.CreateImageAsync(image);
             }
             catch (Exception e)
             {
                 return BadRequest(e);
             }
-            return Ok();
+            if (createdImage == null)
+            {
+                return BadRequest();
+            }
+            return Ok(createdImage);
         }
 
     }
