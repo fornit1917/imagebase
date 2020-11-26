@@ -89,7 +89,8 @@ namespace ImageBase.WebApp.Services.Implementations
         {
             ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();            
 
-            if (await _repository.HasCatalogWithUserIdAsync(catalogDto.Id, catalogDto.UserId))
+            if (await _repository.HasCatalogWithUserIdAsync(catalogDto.Id, catalogDto.UserId) &&
+                await _repository.HasCatalogWithUserIdAsync(catalogDto.ParentCatalogId, catalogDto.UserId))
             {
                 Catalog catalog = _mapper.Map<Catalog>(catalogDto);
                 if (await _repository.HasChildWithNameAsync(catalog))
