@@ -3,6 +3,7 @@ using ImageBase.WebApp.Data.Dtos;
 using ImageBase.WebApp.Data.Models;
 using ImageBase.WebApp.Data.Profiles;
 using ImageBase.WebApp.Repositories;
+using ImageBase.WebApp.Services;
 using ImageBase.WebApp.Services.Implementations;
 using ImageBase.WebApp.Services.Interfaces;
 using Moq;
@@ -31,7 +32,7 @@ namespace ImageBase.WebApp.UnitTests
         [Fact]
         public async Task CreatImageAsyncCallsMethodOfRepository_And_SavesChanges()
         {
-            ImageDto imageDto = await _service.CreateImageAsync(new AddImageDto());
+            ServiceResponse<ImageDto> imageDto = await _service.CreateImageAsync(new AddImageDto());
 
             _imageRepositoryMock.Verify(r => r.Add(It.IsAny<Image>()), Times.Once);
             _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);

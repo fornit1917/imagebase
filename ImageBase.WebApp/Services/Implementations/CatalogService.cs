@@ -28,98 +28,157 @@ namespace ImageBase.WebApp.Services.Implementations
         public async Task<ServiceResponse<CatalogDto>> CreateCatalogAsync(CatalogDto catalogDto)
         {
             ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();
-            Catalog catalog = _mapper.Map<Catalog>(catalogDto);
 
-            if (await _repository.HasChildWithNameAsync(catalog))
+            if (catalogDto.ParentCatalogId == null ||
+                await _repository.HasCatalogWithUserIdAsync(catalogDto.ParentCatalogId, catalogDto.UserId))
             {
-                serviceResponse.Success = false;
-                serviceResponse.Message = $"The catalog with a name {catalogDto.Name} already exists";
+                Catalog catalog = _mapper.Map<Catalog>(catalogDto);
+                if (await _repository.HasChildWithNameAsync(catalog))
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = $"The catalog with a name {catalogDto.Name} already exists";
+                }
+                else
+                {
+                    _repository.Add(catalog);
+                    await _context.SaveChangesAsync();
+                    serviceResponse.Data = catalogDto;
+                }
                 return serviceResponse;
             }
-            _repository.Add(catalog);
-            await _context.SaveChangesAsync();
-            serviceResponse.Data = catalogDto;
+            serviceResponse.Success = false;
+            serviceResponse.Message = "Access is forbidden or catalog is not found";
 
             return serviceResponse;
         }
 
-        public async Task<bool> DeleteCatalogAsync(int id)
+        public async Task<ServiceResponse<int>> DeleteCatalogAsync(int id, string userId = null)
         {
-            bool flag = await _repository.DeleteAsync(id);
-            if (flag)
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int>();
+
+            if (await _repository.HasCatalogWithUserIdAsync(id, userId))
+            {
+                await _repository.DeleteAsync(id);
                 await _context.SaveChangesAsync();
-            return flag;           
+                serviceResponse.Data = id;
+            }
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Access is forbidden or catalog is not found";
+            }            
+            
+            return serviceResponse;
         }
 
-        public async Task<CatalogDto> GetCatalogAsync(int id)
+        public async Task<ServiceResponse<CatalogDto>> GetCatalogAsync(int id, string userId = null)
         {
-            CatalogDto catalogDto = _mapper.Map<CatalogDto>(await _repository.GetAsync(id));
-            return catalogDto;
-        }
+            ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();
 
-        public async Task<IEnumerable<CatalogDto>> GetCatalogsAsync()
-        {
-            IEnumerable<CatalogDto> catalogsDto = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetAllAsync());
-            return catalogsDto;
-        }
-
-        public async Task<IEnumerable<CatalogDto>> GetSubCatalogsAsync(int id)
-        {
-            IEnumerable<CatalogDto> catalogsDto = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetSubCatalogsAsync(id));
-            return catalogsDto;
+            if (await _repository.HasCatalogWithUserIdAsync(id, userId))
+                serviceResponse.Data = _mapper.Map<CatalogDto>(await _repository.GetAsync(id));
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Access is forbidden or catalog is not found";
+            }
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<CatalogDto>> UpdateCatalogAsync(CatalogDto catalogDto)
         {
-            ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();
-            Catalog catalog = _mapper.Map<Catalog>(catalogDto);
+            ServiceResponse<CatalogDto> serviceResponse = new ServiceResponse<CatalogDto>();            
 
-            if (await _repository.HasChildWithNameAsync(catalog))
+            if (await _repository.HasCatalogWithUserIdAsync(catalogDto.Id, catalogDto.UserId))
             {
-                serviceResponse.Success = false;
-                serviceResponse.Message = $"Catalog with a name {catalogDto.Name} already exists";
-
+                Catalog catalog = _mapper.Map<Catalog>(catalogDto);
+                if (await _repository.HasChildWithNameAsync(catalog))
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = $"Catalog with a name {catalogDto.Name} already exists";
+                }
+                else
+                {
+                    _repository.Update(catalog);
+                    await _context.SaveChangesAsync();
+                    serviceResponse.Data = catalogDto;
+                }
                 return serviceResponse;
             }
-            _repository.Update(catalog);
-            await _context.SaveChangesAsync();
+            serviceResponse.Success = false;
+            serviceResponse.Message = "Access is forbidden or catalog is not found";
 
-            serviceResponse.Data = catalogDto;
             return serviceResponse;
         }
 
-        public async Task DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto)
+        public async Task<ServiceResponse<UpdateImageCatalogDto>> DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto, string userId = null)
         {
-            ImageCatalog imageCatalog = await _repository.GetImageCatalogByIdFKAsync(imageCatalogDto.ImageId, imageCatalogDto.CatalogId);
-            _repository.DeleteImageFromCatalog(imageCatalog);
-            await _context.SaveChangesAsync();
-        }
+            ServiceResponse<UpdateImageCatalogDto> serviceResponse = new ServiceResponse<UpdateImageCatalogDto>();
 
-        public async Task<PaginationListDto<ImageDto>> GetImagesByCatalogAsync(int id, int offset, int limit)
-        {
-            PaginationListDto<Image> paginationListDto = await _repository.GetImagesByCatalogAsync(id, offset, limit);
-
-            return _mapper.Map<PaginationListDto<Image>, PaginationListDto<ImageDto>>(paginationListDto);
-        }
-
-        public async Task AddImageToCatalogAsync(UpdateImageCatalogDto imageCatalogDto)
-        {
-            ImageCatalog imageCatalog = new ImageCatalog()
+            if (await _repository.HasCatalogWithUserIdAsync(imageCatalogDto.CatalogId, userId))
             {
-                ImageId = imageCatalogDto.ImageId,
-                CatalogId = imageCatalogDto.CatalogId
-            };
-            _repository.AddImageToCatalog(imageCatalog);
-            await _context.SaveChangesAsync();
+                ImageCatalog imageCatalog = await _repository.GetImageCatalogByIdFKAsync(imageCatalogDto.ImageId, imageCatalogDto.CatalogId);
+                _repository.DeleteImageFromCatalog(imageCatalog);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Access is forbidden or catalog is not found";
+            }
+
+            return serviceResponse;
         }
 
-        public async Task<IEnumerable<CatalogDto>> GetCatalogsByUserAsync(string userId = null)
+        public async Task<ServiceResponse<PaginationListDto<ImageDto>>> GetImagesFromCatalogAsync(int id, int offset, int limit, string userId = null)
         {
-            IEnumerable<CatalogDto> catalogsDto = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetCatalogsByUserAsync(userId));
+            ServiceResponse<PaginationListDto<ImageDto>> serviceResponse = new ServiceResponse<PaginationListDto<ImageDto>>();
+
+            if (await _repository.HasCatalogWithUserIdAsync(id, userId))
+            {
+                PaginationListDto<Image> paginationListDto = await _repository.GetImagesByCatalogAsync(id, offset, limit);
+                serviceResponse.Data = _mapper.Map<PaginationListDto<Image>, PaginationListDto<ImageDto>>(paginationListDto);
+            }
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Access is forbidden or catalog is not found";
+            }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<UpdateImageCatalogDto>> AddImageToCatalogAsync(UpdateImageCatalogDto imageCatalogDto, string userId = null)
+        {
+            ServiceResponse<UpdateImageCatalogDto> serviceResponse = new ServiceResponse<UpdateImageCatalogDto>();
+
+            if (await _repository.HasCatalogWithUserIdAsync(imageCatalogDto.CatalogId, userId))
+            {
+                ImageCatalog imageCatalog = new ImageCatalog()
+                {
+                    ImageId = imageCatalogDto.ImageId,
+                    CatalogId = imageCatalogDto.CatalogId
+                };
+                _repository.AddImageToCatalog(imageCatalog);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = imageCatalogDto;
+            }
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Access is forbidden or catalog is not found";
+            }
+            return serviceResponse;
+        }
+
+        public async Task<IEnumerable<CatalogDto>> GetCatalogsAsync(string userId = null)
+        {
+            IEnumerable<CatalogDto> catalogsDto = _mapper.Map<IEnumerable<Catalog>, IEnumerable<CatalogDto>>(await _repository.GetCatalogsAsync(userId));
             return catalogsDto;
         }
 
-        public async Task<ServiceResponse<IEnumerable<CatalogDto>>> GetSubCatalogsByUserAsync(int parentId, string userId)
+        public async Task<ServiceResponse<IEnumerable<CatalogDto>>> GetSubCatalogsAsync(int parentId, string userId = null)
         {
             ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = new ServiceResponse<IEnumerable<CatalogDto>>();
 
@@ -128,7 +187,7 @@ namespace ImageBase.WebApp.Services.Implementations
             else
             {
                 serviceResponse.Success = false;
-                serviceResponse.Message = "Access is forbidden";
+                serviceResponse.Message = "Access is forbidden or catalog is not found";
             }
 
             return serviceResponse;

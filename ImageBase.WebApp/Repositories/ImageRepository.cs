@@ -57,5 +57,10 @@ namespace ImageBase.WebApp.Repositories
                 .AnyAsync(i => i.Title == title);
             return isExist;
         }
+
+        public async Task<bool> HasCatalogWithUserIdAsync(int? id, string userId)
+        {
+            return await _context.Catalogs.Where(c => c.Id == id && c.UserId == userId).AnyAsync();
+        }
     }
 }
