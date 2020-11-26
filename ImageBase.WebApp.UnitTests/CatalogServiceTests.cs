@@ -97,9 +97,9 @@ namespace ImageBase.WebApp.UnitTests
             int id = 1;
             _catalogRepositoryMock.Setup(r => r.DeleteAsync(It.IsAny<int>())).Returns(Task.FromResult(flag));
 
-            ServiceResponse<int> result = await _service.DeleteCatalogAsync(id);
+            ServiceResponse<int> serviceResponse = await _service.DeleteCatalogAsync(id);
 
-            Assert.Equal(flag, result.Success);
+            Assert.Equal(flag, serviceResponse.Success);
             if (flag)
                 _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
             else
@@ -126,11 +126,11 @@ namespace ImageBase.WebApp.UnitTests
                 Name = "catalog 1",
             };
 
-            ServiceResponse<CatalogDto> catalogDto = await _service.UpdateCatalogAsync(catalog);
+            ServiceResponse<CatalogDto> serviceResponse = await _service.UpdateCatalogAsync(catalog);
 
             _catalogRepositoryMock.Verify(r => r.Update(It.IsAny<Catalog>()), Times.Once);
             _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
-            Assert.NotNull(catalogDto);
+            Assert.NotNull(serviceResponse);
         }
 
         [Fact]
@@ -159,11 +159,11 @@ namespace ImageBase.WebApp.UnitTests
             _catalogRepositoryMock.Setup(r => r.GetImagesByCatalogAsync(id, It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(paginationList));
 
-            ServiceResponse<PaginationListDto<ImageDto>> paginationListDto = await _service.GetImagesFromCatalogAsync(id, offset, limit);
+            ServiceResponse<PaginationListDto<ImageDto>> serviceResponse = await _service.GetImagesFromCatalogAsync(id, offset, limit);
 
             _catalogRepositoryMock.Verify(r => r.GetImagesByCatalogAsync(id, offset, limit), Times.Once);
-            Assert.NotNull(paginationListDto);
-            Assert.Equal(paginationList.Items.Count, paginationListDto.Data.Items.Count);
+            Assert.NotNull(serviceResponse);
+            Assert.Equal(paginationList.Items.Count, serviceResponse.Data.Items.Count);
         }
 
         [Fact]
@@ -187,9 +187,9 @@ namespace ImageBase.WebApp.UnitTests
         {
             int id = 1;
 
-            var catalogsDto = await _service.GetSubCatalogsAsync(id);
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsAsync(id);
 
-            Assert.NotNull(catalogsDto);
+            Assert.NotNull(serviceResponse);
             _catalogRepositoryMock.Verify(r => r.GetSubCatalogsAsync(id), Times.Once);
         }
 
