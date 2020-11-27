@@ -46,13 +46,13 @@ namespace ImageBase.WebApp.UnitTests
             };           
             _catalogRepositoryMock.Setup(r => r.GetAsync(It.IsAny<int>())).Returns(Task.FromResult(catalog));
 
-            CatalogDto catalogDto = await _service.GetCatalogAsync(1);
+            ServiceResponse<CatalogDto> catalogDto = await _service.GetCatalogAsync(1);
 
             Assert.NotNull(catalogDto);
             Assert.IsAssignableFrom<CatalogDto>(catalogDto);
-            Assert.Equal(catalogDto.Id, catalog.Id);
-            Assert.Equal(catalogDto.Name, catalog.Name);
-            Assert.Equal(catalogDto.UserId, catalog.UserId);
+            Assert.Equal(catalogDto.Data.Id, catalog.Id);
+            Assert.Equal(catalogDto.Data.Name, catalog.Name);
+            Assert.Equal(catalogDto.Data.UserId, catalog.UserId);
         }
         [Fact]
         public async Task CreateCatalogAsyncCallsMethodOfRepository_And_SavesChanges()
@@ -97,9 +97,9 @@ namespace ImageBase.WebApp.UnitTests
             int id = 1;
             _catalogRepositoryMock.Setup(r => r.DeleteAsync(It.IsAny<int>())).Returns(Task.FromResult(flag));
 
-            bool result = await _service.DeleteCatalogAsync(id);
+            ServiceResponse<int> serviceResponse = await _service.DeleteCatalogAsync(id);
 
-            Assert.Equal(flag, result);
+            Assert.Equal(flag, serviceResponse.Success);
             if (flag)
                 _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
             else
@@ -126,11 +126,11 @@ namespace ImageBase.WebApp.UnitTests
                 Name = "catalog 1",
             };
 
-            ServiceResponse<CatalogDto> catalogDto = await _service.UpdateCatalogAsync(catalog);
+            ServiceResponse<CatalogDto> serviceResponse = await _service.UpdateCatalogAsync(catalog);
 
             _catalogRepositoryMock.Verify(r => r.Update(It.IsAny<Catalog>()), Times.Once);
             _dbContextMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
-            Assert.NotNull(catalogDto);
+            Assert.NotNull(serviceResponse);
         }
 
         [Fact]
@@ -159,11 +159,11 @@ namespace ImageBase.WebApp.UnitTests
             _catalogRepositoryMock.Setup(r => r.GetImagesByCatalogAsync(id, It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(paginationList));
 
-            PaginationListDto<ImageDto> paginationListDto = await _service.GetImagesByCatalogAsync(id, offset, limit);
+            ServiceResponse<PaginationListDto<ImageDto>> serviceResponse = await _service.GetImagesFromCatalogAsync(id, offset, limit);
 
             _catalogRepositoryMock.Verify(r => r.GetImagesByCatalogAsync(id, offset, limit), Times.Once);
-            Assert.NotNull(paginationListDto);
-            Assert.Equal(paginationList.Items.Count, paginationListDto.Items.Count);
+            Assert.NotNull(serviceResponse);
+            Assert.Equal(paginationList.Items.Count, serviceResponse.Data.Items.Count);
         }
 
         [Fact]
@@ -187,9 +187,9 @@ namespace ImageBase.WebApp.UnitTests
         {
             int id = 1;
 
-            var catalogsDto = (List<CatalogDto>) await _service.GetSubCatalogsAsync(id);
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsAsync(id);
 
-            Assert.NotNull(catalogsDto);
+            Assert.NotNull(serviceResponse);
             _catalogRepositoryMock.Verify(r => r.GetSubCatalogsAsync(id), Times.Once);
         }
 
@@ -198,10 +198,10 @@ namespace ImageBase.WebApp.UnitTests
         {
             var id = "user id";
 
-            var catalogsDto = (List<CatalogDto>)await _service.GetCatalogsByUserAsync(id);
+            IEnumerable<CatalogDto> catalogsDto = await _service.GetCatalogsAsync(id);
 
             Assert.NotNull(catalogsDto);
-            _catalogRepositoryMock.Verify(r => r.GetCatalogsByUserAsync(id), Times.Once);
+            _catalogRepositoryMock.Verify(r => r.GetCatalogsAsync(id), Times.Once);
         }
 
         [Fact]
@@ -209,7 +209,7 @@ namespace ImageBase.WebApp.UnitTests
         {
             _catalogRepositoryMock.Setup(c => c.HasCatalogWithUserIdAsync(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(false));
 
-            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsByUserAsync(It.IsAny<int>(), It.IsAny<string>());
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsAsync(It.IsAny<int>(), It.IsAny<string>());
 
             Assert.NotNull(serviceResponse);
             Assert.False(serviceResponse.Success);
@@ -221,7 +221,7 @@ namespace ImageBase.WebApp.UnitTests
         {
             _catalogRepositoryMock.Setup(c => c.HasCatalogWithUserIdAsync(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(true));
 
-            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsByUserAsync(It.IsAny<int>(), It.IsAny<string>());
+            ServiceResponse<IEnumerable<CatalogDto>> serviceResponse = await _service.GetSubCatalogsAsync(It.IsAny<int>(), It.IsAny<string>());
 
             Assert.NotNull(serviceResponse);
             Assert.True(serviceResponse.Success);

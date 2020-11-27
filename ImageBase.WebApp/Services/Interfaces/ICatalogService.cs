@@ -9,16 +9,14 @@ namespace ImageBase.WebApp.Services.Interfaces
 {
     public interface ICatalogService
     {
-        Task<IEnumerable<CatalogDto>> GetCatalogsAsync();
-        Task<CatalogDto> GetCatalogAsync(int id);
-        Task<ServiceResponse<CatalogDto>> UpdateCatalogAsync(CatalogDto catalogDto);
-        Task<bool> DeleteCatalogAsync(int id);
         Task<ServiceResponse<CatalogDto>> CreateCatalogAsync(CatalogDto catalogDto);
-        Task<IEnumerable<CatalogDto>> GetSubCatalogsAsync(int id);
-        Task AddImageToCatalogAsync(UpdateImageCatalogDto imageCatalogDto);
-        Task<PaginationListDto<ImageDto>> GetImagesByCatalogAsync(int id, int offset, int limit);
-        Task DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto);
-        Task<IEnumerable<CatalogDto>> GetCatalogsByUserAsync(string userId);
-        Task<ServiceResponse<IEnumerable<CatalogDto>>> GetSubCatalogsByUserAsync(int parentId, string userId);
+        Task<ServiceResponse<int>> DeleteCatalogAsync(int id, string userId = null);
+        Task<ServiceResponse<CatalogDto>> GetCatalogAsync(int id, string userId = null);
+        Task<ServiceResponse<CatalogDto>> UpdateCatalogAsync(CatalogDto catalogDto);
+        Task<ServiceResponse<UpdateImageCatalogDto>> DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto, string userId = null);
+        Task<ServiceResponse<PaginationListDto<ImageDto>>> GetImagesFromCatalogAsync(int id, int offset, int limit, string userId = null);
+        Task<ServiceResponse<UpdateImageCatalogDto>> AddImageToCatalogAsync(UpdateImageCatalogDto imageCatalogDto, string userId = null);
+        Task<IEnumerable<CatalogDto>> GetCatalogsAsync(string userId = null);
+        Task<ServiceResponse<IEnumerable<CatalogDto>>> GetSubCatalogsAsync(int parentId, string userId = null);
     }
 }

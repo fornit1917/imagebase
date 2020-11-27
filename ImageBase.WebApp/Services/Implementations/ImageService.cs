@@ -23,12 +23,25 @@ namespace ImageBase.WebApp.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<ImageDto> CreateImageAsync(AddImageDto addImageDto)
+        public async Task<ServiceResponse<ImageDto>> CreateImageAsync(AddImageDto addImageDto, string userId = null)
         {
+            ServiceResponse<ImageDto> serviceResponse = new ServiceResponse<ImageDto>();
+
+            foreach (var id in addImageDto.CatalogsIds)
+            {
+                if (!await _repository.HasCatalogWithUserIdAsync(id, userId))
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = $"Access is forbidden or catalog - {id} is not found";
+                    return serviceResponse;
+                }
+            }
             Image image = _mapper.Map<Image>(addImageDto);
             image.Id = _repository.Add(image);
             await _context.SaveChangesAsync();
-            return _mapper.Map<ImageDto>(image);
+            serviceResponse.Data = _mapper.Map<ImageDto>(image);
+
+            return serviceResponse;
         }
     }
 }
