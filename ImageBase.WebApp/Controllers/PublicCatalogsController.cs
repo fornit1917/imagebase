@@ -14,21 +14,26 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using ImageBase.WebApp.Data.Models.Authentication;
 using ImageBase.WebApp.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace ImageBase.WebApp.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class CatalogsController : ControllerBase
+    public class PublicCatalogsController : ControllerBase
     {
         private readonly ICatalogService _catalogService;
-        private readonly ILogger<CatalogsController> _logger;
+        private readonly ILogger<PublicCatalogsController> _logger;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public CatalogsController(ILogger<CatalogsController> logger, ICatalogService catalogService)
+        public PublicCatalogsController(ILogger<PublicCatalogsController> logger, ICatalogService catalogService, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _logger = logger;
             _catalogService = catalogService;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -46,13 +51,20 @@ namespace ImageBase.WebApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CatalogDto>>> GetCatalogsByUser(string userId)
         {
-            IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetCatalogsByUserAsync(userId);
-            if (allCatalogs == null)
+            if (await IsCurrentUserOrAdmin(userId))
             {
-                return NotFound();
+                IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetCatalogsByUserAsync(userId);
+                if (allCatalogs == null)
+                {
+                    return NotFound();
+                }
+                return Ok(allCatalogs);
             }
-            return Ok(allCatalogs);
-        } 
+            else
+            {
+                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
+            }
+        }
 
         [HttpGet("sub/{id:int}")]
         public async Task<ActionResult<IEnumerable<CatalogDto>>> GetSubCatalogsAsync(int id)
@@ -68,12 +80,19 @@ namespace ImageBase.WebApp.Controllers
         [HttpGet("autor/sub/{parentId:int}/{userId}")]
         public async Task<ActionResult<IEnumerable<CatalogDto>>> GetSubCatalogsByUserAsync(int parentId, string userId)
         {
-            ServiceResponse<IEnumerable<CatalogDto>> allCatalogs = await _catalogService.GetSubCatalogsByUserAsync(parentId, userId);
-            if (allCatalogs == null)
+            if (await IsCurrentUserOrAdmin(userId))
             {
-                return NotFound();
+                ServiceResponse<IEnumerable<CatalogDto>> allCatalogs = await _catalogService.GetSubCatalogsByUserAsync(parentId, userId);
+                if (allCatalogs == null)
+                {
+                    return NotFound();
+                }
+                return Ok(allCatalogs);
             }
-            return Ok(allCatalogs);
+            else
+            {
+                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
+            }
         }
 
         [HttpGet("image/{id:int}")]
@@ -111,6 +130,7 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult<CatalogDto>> CreateCatalog(CatalogDto catalog)
         {
             ServiceResponse<CatalogDto> createcatalog;
@@ -130,9 +150,11 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpPost("image")]
-        public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto image)
+        public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto image, string userId)
         {
-            try
+            if (await IsCurrentUserOrAdmin(userId))
+            {
+                try
             {
                 await _catalogService.AddImageToCatalogAsync(image);
             }
@@ -141,6 +163,11 @@ namespace ImageBase.WebApp.Controllers
                 return BadRequest(e);
             }
             return Ok();
+            }
+            else
+            {
+                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
+            }
         }
 
         [HttpDelete("{id:int}")]
@@ -168,7 +195,28 @@ namespace ImageBase.WebApp.Controllers
                 return BadRequest(e);
             }
             return Ok();
-        }      
-        
+        }
+
+
+        private async Task<bool> IsCurrentUserOrAdmin(string userId)
+        {
+            var roles = new List<string>();
+            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            if (user != null)
+                roles = (List<string>)await _userManager.GetRolesAsync(user);
+            bool isAdmin = false;
+            foreach (var role in roles)
+            {
+                if (role == UserRoles.Admin) isAdmin = true;
+            }
+            if ((user.Id == userId && !isAdmin) || (isAdmin))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
