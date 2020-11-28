@@ -5,20 +5,22 @@ namespace ImageBase.HashBase
 {
     public class VPTreeHashBase : IHashBase
     {
-        public VPTree Root { get; set; }
+        private VPTree root;
 
         public void CreateIndex(IEnumerable<HashItem> items)
         {
-            Root = new VPTree(items);
+            root = new VPTree(items);
         }
 
         public IReadOnlyList<long> Search(long hash, int radius, int limit)
         {
             var allItems = new List<HashItem>();
+
             var resultIDs = new List<long>(limit);
 
-            SearchAllIDs(Root, allItems, hash, radius);
-            allItems.Sort(new HashComparer(new HashItem() { ObjectId = -1, Hash = hash }));
+            SearchAllIDs(root, allItems, hash, radius);
+
+            allItems.Sort(new HashComparer(new HashItem() { Hash = hash }));
 
             for (int i = 0; i < limit && i < allItems.Count; i++)
             {
@@ -32,7 +34,7 @@ namespace ImageBase.HashBase
         {
             int centerToPointDistance = HammingDistance.Calculate(node.VantagePoint.Hash, hash);
 
-            if ((centerToPointDistance - radius) > node.Mu)
+            if ((centerToPointDistance - radius) > node.Radius)
             {
                 if (node.Outside != null)
                 {
@@ -41,7 +43,7 @@ namespace ImageBase.HashBase
                 return;
             }
 
-            if ((centerToPointDistance + radius) < node.Mu)
+            if ((centerToPointDistance + radius) < node.Radius)
             {
                 if (node.Inside != null)
                 {
@@ -56,13 +58,11 @@ namespace ImageBase.HashBase
 
             if (node.Outside != null)
             {
-                if ((centerToPointDistance + radius) >= node.Mu)
-                    SearchAllIDs(node.Outside, resultIDs, hash, radius);
+                SearchAllIDs(node.Outside, resultIDs, hash, radius);
             }
             if (node.Inside != null)
             {
-                if ((centerToPointDistance - radius) < node.Mu)
-                    SearchAllIDs(node.Inside, resultIDs, hash, radius);
+                SearchAllIDs(node.Inside, resultIDs, hash, radius);
             }
             if (centerToPointDistance <= radius)
             {

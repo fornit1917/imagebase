@@ -14,14 +14,10 @@ namespace ImageBase.HashBase
 
         public int Compare(HashItem x, HashItem y)
         {
-            if (x.Hash != y.Hash)
-            {
-                var result = HammingDistance.Calculate(x.Hash, vantagePoint.Hash)
-                    .CompareTo(HammingDistance.Calculate(y.Hash, vantagePoint.Hash));
-                if (result != 0) return result;
-            }
+            var result = HammingDistance.Calculate(x.Hash, vantagePoint.Hash)
+                .CompareTo(HammingDistance.Calculate(y.Hash, vantagePoint.Hash));
 
-            return x.ObjectId.CompareTo(y.ObjectId);
+            return result;
         }
     }
 }
