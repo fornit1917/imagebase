@@ -11,6 +11,9 @@ using ImageBase.WebApp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ImageBase.WebApp.Data.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using ImageBase.WebApp.Services;
+using Microsoft.AspNetCore.Identity;
+using ImageBase.WebApp.Data.Models.Authentication;
 
 namespace ImageBase.WebApp.Controllers
 {
@@ -21,30 +24,37 @@ namespace ImageBase.WebApp.Controllers
     {
         private readonly IImageService _imagesService;
         private readonly ILogger<ImagesController> _logger;
+        private readonly UserManager<User> _userManager;
 
-        public ImagesController(ILogger<ImagesController> logger, IImageService imagesService)
+        public ImagesController(ILogger<ImagesController> logger, IImageService imagesService, UserManager<User> userManager)
         {
             _logger = logger;
             _imagesService = imagesService;
+            _userManager = userManager;
         }
 
         [HttpPost]
         public async Task<ActionResult<ImageDto>> CreateImage(AddImageDto image)
         {
-            ImageDto createdImage;
-            try
+            ServiceResponse<ImageDto> serviceCreateImage = await _imagesService.CreateImageAsync(image, await CurrentUser());
+            if (serviceCreateImage.Success == false)
             {
-                createdImage =  await _imagesService.CreateImageAsync(image);
+                return Forbid(serviceCreateImage.Message);
             }
-            catch (Exception e)
+            return Ok(serviceCreateImage);
+        }
+
+        private async Task<string> CurrentUser()
+        {
+            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            if (user != null)
             {
-                return BadRequest(e);
+                return user.Id;
             }
-            if (createdImage == null)
+            else
             {
-                return BadRequest();
+                return null;
             }
-            return Ok(createdImage);
         }
 
     }

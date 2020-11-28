@@ -11,8 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace ImageBase.WebApp.Controllers
 {
     [Route("api/[controller]")]
@@ -23,184 +21,122 @@ namespace ImageBase.WebApp.Controllers
         private readonly ICatalogService _catalogService;
         private readonly ILogger<PublicCatalogsController> _logger;
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public PrivateCatalogsController(ILogger<PublicCatalogsController> logger, ICatalogService catalogService, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public PrivateCatalogsController(ILogger<PublicCatalogsController> logger, ICatalogService catalogService, UserManager<User> userManager)
         {
             _logger = logger;
             _catalogService = catalogService;
             _userManager = userManager;
-            _roleManager = roleManager;
         }
 
-        [Route("autor/{userId}")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CatalogDto>>> GetCatalogsByUser(string userId)
+        public async Task<ActionResult<IEnumerable<CatalogDto>>> GetCatalogs()
         {
-            if (await IsCurrentUser(userId))
-            {
-                IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetCatalogsByUserAsync(userId);
-                if (allCatalogs == null)
-                {
-                    return NotFound();
-                }
-                return Ok(allCatalogs);
-            }
-            else
-            {
-                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
-            }
+            IEnumerable<CatalogDto> allCatalogs = await _catalogService.GetCatalogsAsync(await CurrentUser());
+            return Ok(allCatalogs);
         }
 
-        [HttpGet("autor/sub/{parentId:int}/{userId}")]
-        public async Task<ActionResult<IEnumerable<CatalogDto>>> GetSubCatalogsByUserAsync(int parentId, string userId)
+        [HttpGet("sub/{id:int}")]
+        public async Task<ActionResult<IEnumerable<CatalogDto>>> GetSubCatalogsAsync(int id)
         {
-            if (await IsCurrentUser(userId))
+            ServiceResponse<IEnumerable<CatalogDto>> serviceGetSubCatalog = await _catalogService.GetSubCatalogsAsync(id, await CurrentUser());
+            if (serviceGetSubCatalog.Success == false)
             {
-                ServiceResponse<IEnumerable<CatalogDto>> allCatalogs = await _catalogService.GetSubCatalogsByUserAsync(parentId, userId);
-                if (allCatalogs == null)
-                {
-                    return NotFound();
-                }
-                return Ok(allCatalogs);
+                return Forbid(serviceGetSubCatalog.Message);
             }
-            else
-            {
-                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
-            }
+            return Ok(serviceGetSubCatalog);
         }
 
         [HttpGet("image/{id:int}")]
         public async Task<ActionResult<IEnumerable<ImageDto>>> GetImagesByCatalog(int id, int offset = 0, int limit = 4)
         {
-            PaginationListDto<ImageDto> allImages = await _catalogService.GetImagesByCatalogAsync(id, offset, limit);
-            if (allImages == null)
+            ServiceResponse<PaginationListDto<ImageDto>> serviceGetImagesByCatalog = await _catalogService.GetImagesFromCatalogAsync(id, offset, limit, await CurrentUser());
+            if (serviceGetImagesByCatalog.Success == false)
             {
-                return NotFound();
+                return Forbid(serviceGetImagesByCatalog.Message);
             }
-            return Ok(allImages);
+            return Ok(serviceGetImagesByCatalog);
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<CatalogDto>> GetCatalog(int id)
         {
-            CatalogDto catalog = await _catalogService.GetCatalogAsync(id);
-            if (catalog == null)
+            ServiceResponse<CatalogDto> serviceGetCatalog = await _catalogService.GetCatalogAsync(id, await CurrentUser());
+            if (serviceGetCatalog.Success == false)
             {
-                return NotFound();
+                return Forbid(serviceGetCatalog.Message);
             }
-            if (await IsCurrentUser(catalog.UserId))
-            { 
-                return Ok(catalog);
-            }
-            else
-            {
-                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
-            }
+            return Ok(serviceGetCatalog);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<CatalogDto>> UpdateCatalog(CatalogDto catalog)
         {
-            if (catalog == null)
+            ServiceResponse<CatalogDto> serviceUpdateCatalog = await _catalogService.UpdateCatalogAsync(catalog);
+            if (serviceUpdateCatalog.Success == false)
             {
-                return NotFound();
+                return Forbid(serviceUpdateCatalog.Message);
             }
-            if (await IsCurrentUser(catalog.UserId))
-            {
-                var updatecatalog = await _catalogService.UpdateCatalogAsync(catalog);
-                return Ok(updatecatalog);
-            }
-            else
-            {
-                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
-            }
+            return Ok(serviceUpdateCatalog);
         }
 
         [HttpPost]
         public async Task<ActionResult<CatalogDto>> CreateCatalog(CatalogDto catalog)
         {
-            ServiceResponse<CatalogDto> createcatalog;
-            if (await IsCurrentUser(catalog.UserId))
+            ServiceResponse<CatalogDto> serviceCreateCatalog = await _catalogService.CreateCatalogAsync(catalog);
+            if (serviceCreateCatalog.Success == false)
             {
-                try
-                {
-                    createcatalog = await _catalogService.CreateCatalogAsync(catalog);
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e);
-                }
-                if (createcatalog == null)
-                {
-                    return BadRequest();
-                }
-                return Ok(createcatalog);
+                return Forbid(serviceCreateCatalog.Message);
             }
-            else
-            {
-                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
-            }
+            return Ok(serviceCreateCatalog);
         }
 
         [HttpPost("image")]
-        public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto image, string userId)
+        public async Task<ActionResult<CatalogDto>> AddImageToCatalog(UpdateImageCatalogDto image)
         {
-            if (await IsCurrentUser(userId))
+            ServiceResponse<UpdateImageCatalogDto> serviceAddImageToCatalog = await _catalogService.AddImageToCatalogAsync(image, await CurrentUser());
+            if (serviceAddImageToCatalog.Success == false)
             {
-                try
-                {
-                    await _catalogService.AddImageToCatalogAsync(image);
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e);
-                }
-                return Ok();
+                return Forbid(serviceAddImageToCatalog.Message);
             }
-            else
-            {
-                return BadRequest(new Response { Status = "Error!", Message = "Access is denied" });
-            }
+            return Ok(serviceAddImageToCatalog);
         }
 
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<CatalogDto>> DeleteCatalog(int id)
         {
-            bool isCatalogDeleted = await _catalogService.DeleteCatalogAsync(id);
-            if (isCatalogDeleted == false)
+            ServiceResponse<int> serviceDeleteCatalog = await _catalogService.DeleteCatalogAsync(id, await CurrentUser());
+            if (serviceDeleteCatalog.Success == false)
             {
-                return NotFound();
+                return Forbid(serviceDeleteCatalog.Message);
             }
-            return Ok();
+            return Ok(serviceDeleteCatalog);
         }
 
         [HttpDelete("image/{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult<CatalogDto>> DeleteImageFromCatalog(UpdateImageCatalogDto deleteimage)
         {
-            try
+            ServiceResponse<UpdateImageCatalogDto> serviceDeleteImageFromCatalog = await _catalogService.DeleteImageFromCatalogAsync(deleteimage, await CurrentUser());
+            if (serviceDeleteImageFromCatalog.Success == false)
             {
-                await _catalogService.DeleteImageFromCatalogAsync(deleteimage);
+                return Forbid(serviceDeleteImageFromCatalog.Message);
             }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-            return Ok();
+            return Ok(serviceDeleteImageFromCatalog);
         }
 
-
-        private async Task<bool> IsCurrentUser(string userId)
+        private async Task<string> CurrentUser()
         {
             var user = await _userManager.FindByEmailAsync(User.Identity.Name);
-            if (user.Id == userId)
+            if (user != null)
             {
-                return true;
+                return user.Id;
             }
             else
             {
-                return false;
+                return null;
             }
         }
+
     }
 }
