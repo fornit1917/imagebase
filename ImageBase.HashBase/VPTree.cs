@@ -14,7 +14,7 @@ namespace ImageBase.HashBase
             startIndex = 0;
             endIndex = itemsList.Count() - 1;
 
-            CreteNode();
+            CreateNode();
         }
 
         private VPTree(List<HashItem> items, int startIndex, int endIndex)
@@ -23,7 +23,7 @@ namespace ImageBase.HashBase
             this.startIndex = startIndex;
             this.endIndex = endIndex;
 
-            CreteNode();
+            CreateNode();
         }
 
         /// <summary>
@@ -50,21 +50,21 @@ namespace ImageBase.HashBase
         private readonly int endIndex;
         private readonly List<HashItem> itemsList;
 
-        private void CreteNode()
+        private void CreateNode()
         {
-            int itemCount = endIndex - startIndex;
+            int childrenCount = endIndex - startIndex;
 
             int vantagePointIndex = new Random().Next(startIndex, endIndex);
             VantagePoint = itemsList[vantagePointIndex];
 
             SwapItems(itemsList, startIndex, vantagePointIndex);
 
-            if (itemCount < 1)
+            if (childrenCount < 1)
                 return;
 
             int median = (endIndex + startIndex) / 2;
 
-            itemsList.Sort(startIndex + 1, itemCount, new HashComparer(VantagePoint));
+            itemsList.Sort(startIndex + 1, childrenCount, new HashComparer(VantagePoint));
 
             Radius = HammingDistance.Calculate(itemsList[median].Hash, VantagePoint.Hash);
 

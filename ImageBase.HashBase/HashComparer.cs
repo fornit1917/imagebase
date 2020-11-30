@@ -5,17 +5,17 @@ namespace ImageBase.HashBase
 {
     public class HashComparer : IComparer<HashItem>
     {
-        private readonly HashItem vantagePoint;
+        private readonly long vantagePointHash;
 
         public HashComparer(HashItem vantagePoint)
         {
-            this.vantagePoint = vantagePoint;
+            this.vantagePointHash = vantagePoint.Hash;
         }
 
         public int Compare(HashItem x, HashItem y)
         {
-            var result = HammingDistance.Calculate(x.Hash, vantagePoint.Hash)
-                .CompareTo(HammingDistance.Calculate(y.Hash, vantagePoint.Hash));
+            var result = HammingDistance.Calculate(x.Hash, vantagePointHash)
+                .CompareTo(HammingDistance.Calculate(y.Hash, vantagePointHash));
 
             return result;
         }
