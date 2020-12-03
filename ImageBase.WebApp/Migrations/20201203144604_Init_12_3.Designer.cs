@@ -3,15 +3,17 @@ using System;
 using ImageBase.WebApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ImageBase.WebApp.Migrations
 {
     [DbContext(typeof(AspPostgreSQLContext))]
-    partial class AspPostgreSQLContextModelSnapshot : ModelSnapshot
+    [Migration("20201203144604_Init_12_3")]
+    partial class Init_12_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -366,7 +368,8 @@ namespace ImageBase.WebApp.Migrations
                 {
                     b.HasOne("ImageBase.WebApp.Data.Models.Catalog", "ParentCatalog")
                         .WithMany()
-                        .HasForeignKey("ParentCatalogId");
+                        .HasForeignKey("ParentCatalogId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ImageBase.WebApp.Data.Models.Authentication.User", "User")
                         .WithMany("Catalogs")
