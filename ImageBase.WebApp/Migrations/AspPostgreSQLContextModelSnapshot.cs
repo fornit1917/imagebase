@@ -187,7 +187,7 @@ namespace ImageBase.WebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalId", "ServiceId")
+                    b.HasIndex("ServiceId", "ExternalId")
                         .IsUnique();
 
                     b.ToTable("images");

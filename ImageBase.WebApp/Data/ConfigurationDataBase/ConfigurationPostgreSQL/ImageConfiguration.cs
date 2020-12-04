@@ -23,11 +23,11 @@ namespace ImageBase.WebApp.Data.ConfigurationDataBase.ConfigurationPostgreSQL
             entityBuilder.Property(i => i.Height).HasColumnName("height").IsRequired();
             entityBuilder.Property(i => i.Width).HasColumnName("width").IsRequired();
             entityBuilder.Property(i => i.LargePreviewUrl).HasColumnName("large_preview_url").HasColumnType("text").IsRequired();
-            entityBuilder.Property(i => i.SmallPreviewUrl).HasColumnName("small_preview_url").HasColumnType("text");
+            entityBuilder.Property(i => i.SmallPreviewUrl).HasColumnName("small_preview_url").HasColumnType("text").IsRequired();
             entityBuilder.Property(i => i.OriginalUrl).HasColumnName("original_url").HasColumnType("text").IsRequired();
             entityBuilder.Property(i => i.Id).ValueGeneratedOnAdd();
 
-            entityBuilder.HasIndex(i => new { i.ExternalId, i.ServiceId }).IsUnique();
+            entityBuilder.HasIndex(i => new { i.ServiceId, i.ExternalId}).IsUnique();
 
             entityBuilder.ToTable("images");
         }

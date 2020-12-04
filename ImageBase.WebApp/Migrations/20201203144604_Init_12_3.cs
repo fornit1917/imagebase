@@ -52,7 +52,8 @@ namespace ImageBase.WebApp.Migrations
                 name: "small_preview_url",
                 table: "images",
                 type: "text",
-                nullable: true);
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.AddColumn<int>(
                 name: "width",
@@ -61,9 +62,9 @@ namespace ImageBase.WebApp.Migrations
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_images_external_id_service_id",
+                name: "IX_images_service_id_external_id",
                 table: "images",
-                columns: new[] { "external_id", "service_id" },
+                columns: new[] { "service_id", "external_id" },
                 unique: true);
 
             migrationBuilder.AddForeignKey(
@@ -82,7 +83,7 @@ namespace ImageBase.WebApp.Migrations
                 table: "catalogs");
 
             migrationBuilder.DropIndex(
-                name: "IX_images_external_id_service_id",
+                name: "IX_images_service_id_external_id",
                 table: "images");
 
             migrationBuilder.DropColumn(
