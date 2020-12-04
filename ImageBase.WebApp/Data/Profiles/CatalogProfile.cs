@@ -19,6 +19,7 @@ namespace ImageBase.WebApp.Data.Profiles
             CreateMap<int, ImageCatalog>()
                 .ForMember(map => map.CatalogId, map => map.MapFrom(c => c));
             CreateMap<PaginationListDto<Image>, PaginationListDto<ImageDto>>();
+            CreateMap<PaginationListDto<Image>, PaginationListDto<ImagesListItemDto>>();
         }
     }
 }

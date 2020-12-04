@@ -15,6 +15,7 @@ namespace ImageBase.WebApp.Data.ConfigurationDataBase.ConfigurationPostgreSQL
             entityBuilder.HasKey(c => c.Id);
             entityBuilder.Property(c => c.Id).HasColumnName("id");
             entityBuilder.Property(c => c.Name).HasColumnName("name").HasMaxLength(30).IsRequired();
+            entityBuilder.HasOne(c => c.ParentCatalog).WithMany().OnDelete(DeleteBehavior.Cascade);
             entityBuilder.Property(c => c.ParentCatalogId).HasColumnName("parent_catalog_id");
             entityBuilder.Property(c => c.UserId).HasColumnName("user_id");
             entityBuilder.Property(c => c.Id).ValueGeneratedOnAdd();

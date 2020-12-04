@@ -121,6 +121,7 @@ namespace ImageBase.WebApp.Services.Implementations
                 ImageCatalog imageCatalog = await _repository.GetImageCatalogByIdFKAsync(imageCatalogDto.ImageId, imageCatalogDto.CatalogId);
                 _repository.DeleteImageFromCatalog(imageCatalog);
                 await _context.SaveChangesAsync();
+                serviceResponse.Data = imageCatalogDto;
             }
             else
             {
@@ -131,14 +132,14 @@ namespace ImageBase.WebApp.Services.Implementations
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<PaginationListDto<ImageDto>>> GetImagesFromCatalogAsync(int id, int offset, int limit, string userId = null)
+        public async Task<ServiceResponse<PaginationListDto<ImagesListItemDto>>> GetImagesFromCatalogAsync(int id, int offset, int limit, string userId = null)
         {
-            ServiceResponse<PaginationListDto<ImageDto>> serviceResponse = new ServiceResponse<PaginationListDto<ImageDto>>();
+            ServiceResponse<PaginationListDto<ImagesListItemDto>> serviceResponse = new ServiceResponse<PaginationListDto<ImagesListItemDto>>();
 
             if (await _repository.HasCatalogWithUserIdAsync(id, userId))
             {
                 PaginationListDto<Image> paginationListDto = await _repository.GetImagesByCatalogAsync(id, offset, limit);
-                serviceResponse.Data = _mapper.Map<PaginationListDto<Image>, PaginationListDto<ImageDto>>(paginationListDto);
+                serviceResponse.Data = _mapper.Map<PaginationListDto<Image>, PaginationListDto<ImagesListItemDto>>(paginationListDto);
             }
             else
             {

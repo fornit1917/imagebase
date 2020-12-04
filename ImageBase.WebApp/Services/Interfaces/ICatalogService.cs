@@ -14,7 +14,7 @@ namespace ImageBase.WebApp.Services.Interfaces
         Task<ServiceResponse<CatalogDto>> GetCatalogAsync(int id, string userId = null);
         Task<ServiceResponse<CatalogDto>> UpdateCatalogAsync(CatalogDto catalogDto);
         Task<ServiceResponse<UpdateImageCatalogDto>> DeleteImageFromCatalogAsync(UpdateImageCatalogDto imageCatalogDto, string userId = null);
-        Task<ServiceResponse<PaginationListDto<ImageDto>>> GetImagesFromCatalogAsync(int id, int offset, int limit, string userId = null);
+        Task<ServiceResponse<PaginationListDto<ImagesListItemDto>>> GetImagesFromCatalogAsync(int id, int offset, int limit, string userId = null);
         Task<ServiceResponse<UpdateImageCatalogDto>> AddImageToCatalogAsync(UpdateImageCatalogDto imageCatalogDto, string userId = null);
         Task<IEnumerable<CatalogDto>> GetCatalogsAsync(string userId = null);
         Task<ServiceResponse<IEnumerable<CatalogDto>>> GetSubCatalogsAsync(int parentId, string userId = null);
