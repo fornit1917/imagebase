@@ -3,6 +3,7 @@ using System;
 using ImageBase.WebApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -10,9 +11,10 @@ using NpgsqlTypes;
 namespace ImageBase.WebApp.Migrations
 {
     [DbContext(typeof(AspPostgreSQLContext))]
-    partial class AspPostgreSQLContextModelSnapshot : ModelSnapshot
+    [Migration("20201204105242_FTSIntegration")]
+    partial class FTSIntegration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

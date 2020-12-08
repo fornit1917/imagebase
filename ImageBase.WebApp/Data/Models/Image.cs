@@ -10,7 +10,7 @@ namespace ImageBase.WebApp.Data.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string KeyWords { get; set; }
-
+        public ImageFtSearch ImageFtSearch { get; set; }
         public List<ImageCatalog> ImageCatalogs { get; set; }
     }
 }
