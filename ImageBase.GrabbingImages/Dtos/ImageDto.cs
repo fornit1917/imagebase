@@ -1,11 +1,10 @@
-﻿using ImageBase.GrabbingImages.Converter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ImageBase.GrabbingImages.Dtos
 {
-    public class ImageDto : CSVBase
+    public class ImageDto
     {
         public int id { get; set; }
 

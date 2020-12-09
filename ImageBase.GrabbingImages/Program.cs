@@ -4,21 +4,60 @@ using ImageBase.GrabbingImages.Dtos;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
+using ServiceStack.Text;
+using System;
 
 namespace ImageBase.GrabbingImages
 {
     public class Program
     {
         private static List<ImageDto> _listImageDtos;
-        private static string KeyWord;
+
         static async Task Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+               await GrabbingFromPexels();
+            }
+            else
+            {
+                switch (args.Length)
+                {
+                    case 1:
+                        if (args[0] == "Pexels")
+                        {
+                            await GrabbingFromPexels();
+                        }
+                        break;
+                    case 2:
+                        if (args[0] == "Pexels")
+                        {
+                            await GrabbingFromPexels(args[1]);
+                        }
+                        break;
+                    case 3:
+                        if (args[0] == "Pexels")
+                        {
+                            await GrabbingFromPexels(args[1],Convert.ToInt32(args[2]));
+                        }
+                        break;
+                    case 4:
+                        if (args[0] == "Pexels")
+                        {
+                            await GrabbingFromPexels(args[1], Convert.ToInt32(args[2]),args[3]);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        static async Task GrabbingFromPexels(string theme="Nature",int countImages=5,string outputfile= "AllImages.csv")
+        {
             Grabber grabber = InicializeGrabber();
-            KeyWord = "Nature";
-            PhotoPage photoPage = await grabber.SearchPhotosAsync(KeyWord, 1,5);
-
+            PhotoPage photoPage = await grabber.SearchPhotosAsync(theme, 1, countImages);
             _listImageDtos = CreateListImages(photoPage);
-            ConvertToCSVAndSaveInFile(_listImageDtos,"AllImages.csv");
+            ConvertToCSVAndSaveInFile(_listImageDtos, outputfile);
         }
         static Grabber InicializeGrabber()
         {
@@ -56,10 +95,7 @@ namespace ImageBase.GrabbingImages
         {
             using (var sw = new StreamWriter(destination))
             {
-                foreach (var item in imageDtos)
-                {
-                    sw.WriteLine(item.ToCsv());
-                }
+                sw.WriteCsv(imageDtos);
             }
         }
     }

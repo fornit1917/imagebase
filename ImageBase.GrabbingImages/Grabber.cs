@@ -18,9 +18,9 @@ namespace ImageBase.GrabbingImages
         }
         private PexelsClient pexelsClient;
 
-        public async Task<PhotoPage> SearchPhotosAsync(string tema = "Nature", int pagestart=1,int count = 1)
+        public async Task<PhotoPage> SearchPhotosAsync(string theme = "Nature", int pagestart=1,int count = 1)
         {
-            PhotoPage photoPage = await pexelsClient.SearchPhotosAsync(tema, "ru-RU", pagestart, count);
+            PhotoPage photoPage = await pexelsClient.SearchPhotosAsync(theme, "ru-RU", pagestart, count);
             return photoPage;
         }
     }

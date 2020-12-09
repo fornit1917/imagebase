@@ -31,15 +31,26 @@ _ImageBase.ImageHash_ - this project calculates hashes images
 _ImageBase.WebApp_ - this project contains rest API requests to manage your images collection
 ## Usage
 ImageBase.GrabbingImages
+  
+If you are using the Pexels open service set parameters then you need to enter the command line arguments.  
+ For example 
+
+```bash
+ImageBase.GrabbingImages.exe Pexels Sun 3 Out.csv
+```
+It configures parameters for you request
+1) Pexels - name services
+2) Sun - chosen name topic
+3) 3 - count required images
+4) Out.csv - name of the output file with csv data
 ```ccharp
-static async Task Main(string[] args)
-{
- Grabber grabber = InicializeGrabber();
- KeyWord = "Nature";
- PhotoPage photoPage = await grabber.SearchPhotosAsync(KeyWord, 1,5); //Set 3 parameters: tema, start page and count image
- _listImageDtos = CreateListImages(photoPage);
- ConvertToCSVAndSaveInFile(_listImageDtos,"AllImages.csv"); //Set 2 parameters: list with your images and output saving file
-}
+static async Task GrabbingFromPexels(string theme="Nature",int countImages=5,string outputfile= "AllImages.csv")
+        {
+            Grabber grabber = InicializeGrabber();
+            PhotoPage photoPage = await grabber.SearchPhotosAsync(theme, 1, countImages);
+            _listImageDtos = CreateListImages(photoPage);
+            ConvertToCSVAndSaveInFile(_listImageDtos, outputfile);
+        }
 ```
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
