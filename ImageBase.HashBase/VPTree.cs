@@ -7,30 +7,41 @@ namespace ImageBase.HashBase
 {
     public class VPTree
     {
-        public VPTree(IEnumerable<HashItem> items)
+        public VPTree(IEnumerable<HashItem> items, int limitCount)
         {
-            itemsList = items.ToList();
+            this.limitCount = limitCount;
+            allItemsList = items.ToList();
 
             startIndex = 0;
-            endIndex = itemsList.Count() - 1;
+            endIndex = allItemsList.Count() - 1;
 
             CreateNode();
         }
 
-        private VPTree(List<HashItem> items, int startIndex, int endIndex)
+        private VPTree(List<HashItem> items, int startIndex, int endIndex, int limitCount)
         {
-            itemsList = items;
+            this.limitCount = limitCount;
+            allItemsList = items;
             this.startIndex = startIndex;
             this.endIndex = endIndex;
 
             CreateNode();
         }
 
+        private VPTree(List<HashItem> lists)
+        {
+            this.Items = lists;
+        }
+
+        /// <summary>
+        /// Items of the current leaf
+        /// </summary>
+        public List<HashItem> Items { get; private set; }
+
         /// <summary>
         /// A vantage point chosen from data
         /// </summary>
-        public HashItem VantagePoint { get; private set; }
-
+        public long VantagePoint { get; private set; }
         /// <summary>
         /// A radius value defining the range of the node
         /// </summary>
@@ -48,36 +59,45 @@ namespace ImageBase.HashBase
 
         private readonly int startIndex;
         private readonly int endIndex;
-        private readonly List<HashItem> itemsList;
+        private readonly List<HashItem> allItemsList;
+        private readonly int limitCount;
 
         private void CreateNode()
         {
-            int childrenCount = endIndex - startIndex;
+            int itemsCount = endIndex - startIndex + 1;
 
             int vantagePointIndex = new Random().Next(startIndex, endIndex);
-            VantagePoint = itemsList[vantagePointIndex];
-
-            SwapItems(itemsList, startIndex, vantagePointIndex);
-
-            if (childrenCount < 1)
-                return;
-
+            VantagePoint = allItemsList[vantagePointIndex].Hash;
+            SwapItems(allItemsList, startIndex, vantagePointIndex);
+         
             int median = (endIndex + startIndex) / 2;
+            allItemsList.Sort(startIndex, itemsCount, new HashComparer(VantagePoint));
+            Radius = HammingDistance.Calculate(allItemsList[median].Hash, VantagePoint);
 
-            itemsList.Sort(startIndex + 1, childrenCount, new HashComparer(VantagePoint));
-
-            Radius = HammingDistance.Calculate(itemsList[median].Hash, VantagePoint.Hash);
-
-            if (median - startIndex > 0)
-                Inside = new VPTree(itemsList, startIndex + 1, median);
-
-            Outside = new VPTree(itemsList, median + 1, endIndex);
+            if (itemsCount > 2 * limitCount)
+            {
+                Inside = new VPTree(allItemsList, startIndex, median, limitCount);
+                Outside = new VPTree(allItemsList, median + 1, endIndex, limitCount);
+            }
+            else
+            {
+                if (itemsCount > 1)
+                {
+                    int middleCount = itemsCount / 2;
+                    Inside = new VPTree(allItemsList.GetRange(startIndex, middleCount));
+                    Outside = new VPTree(allItemsList.GetRange(startIndex + middleCount, itemsCount - middleCount));
+                }
+                else
+                {
+                    Inside = new VPTree(allItemsList.GetRange(startIndex, 1));
+                }
+            }
         }
 
         private void SwapItems(List<HashItem> items, int index1, int index2)
         {
             var temp = items[index1];
-            items[index1] = VantagePoint;
+            items[index1] = items[index2];
             items[index2] = temp;
         }
     }

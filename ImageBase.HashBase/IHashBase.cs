@@ -19,6 +19,10 @@ namespace ImageBase.HashBase
         /// <param name="radius"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        IReadOnlyList<long> Search(long hash, int radius, int limit); 
+        IReadOnlyList<long> Search(long hash, int radius, int limit);
+
+        void Add(HashItem item);
+
+        void Remove(HashItem item);
     }
 }

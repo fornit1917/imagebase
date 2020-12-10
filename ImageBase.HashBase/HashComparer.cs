@@ -12,6 +12,11 @@ namespace ImageBase.HashBase
             this.vantagePointHash = vantagePoint.Hash;
         }
 
+        public HashComparer(long vantagePoint)
+        {
+            this.vantagePointHash = vantagePoint;
+        }
+
         public int Compare(HashItem x, HashItem y)
         {
             var result = HammingDistance.Calculate(x.Hash, vantagePointHash)
