@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ImageBase.GrabbingImages.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ImageBase.GrabbingImages.Dtos
 {
-    public class ImageDto
+    public class ImageDto: IImage
     {
         public int id { get; set; }
 
