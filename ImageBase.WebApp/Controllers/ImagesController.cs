@@ -56,6 +56,17 @@ namespace ImageBase.WebApp.Controllers
                 return null;
             }
         }
+        [AllowAnonymous]
+        [HttpGet("[action]")]
+        public async Task<ActionResult<ImageDto>> Search([FromBody] FullTextSeacrhDto fullTextSeacrhDto)
+        {
+            ServiceResponse<PaginationListDto<Image>> serviceSearch = await _imagesService.FullTextSearchByImagesAsync(fullTextSeacrhDto);
+            if (serviceSearch.Success == false)
+            {
+                return Forbid(serviceSearch.Message);
+            }
+            return Ok(serviceSearch);
+        }
 
     }
 }

@@ -43,5 +43,13 @@ namespace ImageBase.WebApp.Services.Implementations
 
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<PaginationListDto<Image>>> FullTextSearchByImagesAsync(FullTextSeacrhDto queryDto)
+        {
+            var serviceResponse = new ServiceResponse<PaginationListDto<Image>>();
+            serviceResponse.Data = await _repository.GetImagesBySearchQueryAsync(queryDto);
+            serviceResponse.Success = true;
+            return serviceResponse;
+        }
     }
 }

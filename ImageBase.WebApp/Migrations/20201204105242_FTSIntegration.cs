@@ -97,6 +97,27 @@ namespace ImageBase.WebApp.Migrations
 
                                         WHERE images.id = ids.image_id
                                     $$ LANGUAGE SQL IMMUTABLE; ");
+            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION remove_ft_index() RETURNS void AS $$
+                                   BEGIN
+                                     DROP INDEX image_vector_idx;
+                                   END;
+                                   $$ LANGUAGE plpgsql;");
+            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION disable_ft_trigger() RETURNS void AS $$
+                                   BEGIN
+                                     ALTER TABLE images DISABLE TRIGGER image_search_vector_update;
+                                   END;
+                                   $$ LANGUAGE plpgsql;");
+            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION enable_ft_trigger() RETURNS void AS $$
+                                   BEGIN
+                                     ALTER TABLE images ENABLE TRIGGER image_search_vector_update;
+                                   END;
+                                   $$ LANGUAGE plpgsql;");
+            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION create_ft_index() RETURNS void AS $$
+                                    BEGIN
+                                      CREATE INDEX IF NOT EXISTS image_vector_idx ON images_ft_search
+                                                    USING RUM (image_vector);
+                                    END;
+                                    $$ LANGUAGE plpgsql;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -122,6 +143,10 @@ namespace ImageBase.WebApp.Migrations
             migrationBuilder.Sql(@"DROP FUNCTION images_fts;");
             migrationBuilder.Sql(@"DROP FUNCTION setweight;");
             migrationBuilder.Sql(@"DROP FUNCTION image_tsvector_trigger;");
+            migrationBuilder.Sql(@"DROP FUNCTION create_ft_index;");
+            migrationBuilder.Sql(@"DROP FUNCTION remove_ft_index;");
+            migrationBuilder.Sql(@"DROP FUNCTION disable_ft_trigger;");
+            migrationBuilder.Sql(@"DROP FUNCTION enable_ft_trigger;");
         }
     }
 }

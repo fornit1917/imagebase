@@ -1,4 +1,5 @@
-﻿using ImageBase.WebApp.Data.Models;
+﻿using ImageBase.WebApp.Data.Dtos;
+using ImageBase.WebApp.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,20 @@ namespace ImageBase.WebApp.Repositories
         public async Task<bool> HasCatalogWithUserIdAsync(int? id, string userId)
         {
             return await _context.Catalogs.Where(c => c.Id == id && c.UserId == userId).AnyAsync();
+        }
+
+        public async Task<PaginationListDto<Image>> GetImagesBySearchQueryAsync(FullTextSeacrhDto query)
+        {
+            var weights=query.ConvertToPostgreFTSWeights();
+            var images = await _context.Images
+                .FromSqlInterpolated($@"SELECT * FROM images_fts({query.SearchQuery},{weights},{query.Limit},{query.Offset});").ToListAsync();
+            return new PaginationListDto<Image>
+            {
+                Items = images,
+                TotalItemsCount = images.Count(),
+                Limit=query.Limit,
+                Offset=query.Offset              
+            };
         }
     }
 }
