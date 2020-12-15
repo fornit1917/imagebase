@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ImageBase.GrabbingImages.Services.Interfaces
 {
-    public interface IGrabber<T> where T:class, IImage
+    public interface IGrabber
     {
         public IConfiguration Configuration { get; }
-        public Task<List<T>> SearchPhotosAsync(string theme, int pagestart, int count);
+        public Task SearchPhotosAsync(string theme, int pagestart, int count, string outputfile);
     }
 }

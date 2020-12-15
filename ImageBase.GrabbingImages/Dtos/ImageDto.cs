@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ImageBase.GrabbingImages.Dtos
 {
-    public class ImageDto: IImage
+    public class ImageDto
     {
         public int id { get; set; }
 

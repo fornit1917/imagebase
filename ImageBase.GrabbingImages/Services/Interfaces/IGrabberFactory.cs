@@ -5,9 +5,9 @@ using System.Text;
 
 namespace ImageBase.GrabbingImages.Services.Interfaces
 {
-    public interface IGrabberFactory<T> where T : class, IImage
+    public interface IGrabberFactory
     {
         public IConfiguration Configuration { get; }
-        public IGrabber<T> UsePexelsGrabber();
+        public IGrabber CreatePexelsGrabber();
     }
 }

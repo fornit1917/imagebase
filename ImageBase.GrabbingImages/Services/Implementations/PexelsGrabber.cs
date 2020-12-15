@@ -1,4 +1,5 @@
-﻿using ImageBase.GrabbingImages.Dtos;
+﻿using ImageBase.GrabbingImages.Converters;
+using ImageBase.GrabbingImages.Dtos;
 using ImageBase.GrabbingImages.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using PexelsDotNetSDK.Api;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ImageBase.GrabbingImages.Services.Implementations
 {
-    public class PexelsGrabber : IGrabber<ImageDto>
+    public class PexelsGrabber : IGrabber
     {
         public IConfiguration Configuration { get; }
         public PexelsGrabber(IConfiguration configuration)
@@ -20,15 +21,15 @@ namespace ImageBase.GrabbingImages.Services.Implementations
         }
         private PexelsClient pexelsClient;
 
-        public async Task<List<ImageDto>> SearchPhotosAsync(string theme = "Nature", int pagestart = 1, int count = 1)
+        public async Task SearchPhotosAsync(string theme, int pagestart, int count,string outputfile)
         {
             PhotoPage photoPage = await pexelsClient.SearchPhotosAsync(theme, "ru-RU", pagestart, count);
-            return CreateListImages(photoPage);
+            CreateListImages(photoPage, outputfile);
         }
-        private List<ImageDto> CreateListImages(PhotoPage photoPage)
+        private void CreateListImages(PhotoPage photoPage,string outputfile)
         {
-            List<ImageDto> listImageDtos = new List<ImageDto>();
-
+            CSVConverter csvConverter = new CSVConverter();
+            csvConverter.OutputFile = outputfile;
             for (int i = 0; i < photoPage.photos.Count; i++)
             {
                 ImageDto image = new ImageDto()
@@ -44,9 +45,8 @@ namespace ImageBase.GrabbingImages.Services.Implementations
                     small = photoPage.photos[i].source.small,
                     landscape = photoPage.photos[i].source.landscape
                 };
-                listImageDtos.Add(image);
+                csvConverter.SaveToFile(image);
             }
-            return listImageDtos;
         }
     }
 }

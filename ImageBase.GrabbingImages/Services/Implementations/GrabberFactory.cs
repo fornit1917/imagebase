@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ImageBase.GrabbingImages.Services.Implementations
 {
-    public class GrabberFactory : IGrabberFactory<ImageDto>
+    public class GrabberFactory : IGrabberFactory
     {
         public GrabberFactory()
         {
@@ -17,7 +17,7 @@ namespace ImageBase.GrabbingImages.Services.Implementations
             Configuration = config;
         }
         public IConfiguration Configuration { get; }
-        public IGrabber<ImageDto> UsePexelsGrabber()
+        public IGrabber CreatePexelsGrabber()
         {
             return new PexelsGrabber(Configuration);
         }

@@ -17,7 +17,7 @@ namespace ImageBase.GrabbingImages
         {
             if (args.Length == 0)
             {
-                await CreateFabricaAsync(new GrabberFactory());
+                await CreateFactoryAsync(new GrabberFactory());
             }
             else
             {
@@ -26,25 +26,25 @@ namespace ImageBase.GrabbingImages
                     case 1:
                         if (args[0] == "Pexels")
                         {
-                           await CreateFabricaAsync(new GrabberFactory());
+                           await CreateFactoryAsync(new GrabberFactory());
                         }
                         break;
                     case 2:
                         if (args[0] == "Pexels")
                         {
-                            await CreateFabricaAsync(new GrabberFactory(),args[1]);
+                            await CreateFactoryAsync(new GrabberFactory(),args[1]);
                         }
                         break;
                     case 3:
                         if (args[0] == "Pexels")
                         {
-                            await CreateFabricaAsync(new GrabberFactory(), args[1],Convert.ToInt32(args[2]));
+                            await CreateFactoryAsync(new GrabberFactory(), args[1],Convert.ToInt32(args[2]));
                         }
                         break;
                     case 4:
                         if (args[0] == "Pexels")
                         {
-                            await CreateFabricaAsync(new GrabberFactory(), args[1], Convert.ToInt32(args[2]),args[3]);
+                            await CreateFactoryAsync(new GrabberFactory(), args[1], Convert.ToInt32(args[2]),args[3]);
                         }
                         break;
                     default:
@@ -52,19 +52,11 @@ namespace ImageBase.GrabbingImages
                 }
             }
         } 
-        static void ConvertToCSVAndSaveInFile(List<ImageDto> imageDtos,string destination)
+       
+        public static async Task CreateFactoryAsync(IGrabberFactory factory, string theme = "Nature", int countImages = 5, string outputfile = "AllImages3.csv")
         {
-            using (var sw = new StreamWriter(destination))
-            {
-                sw.WriteCsv(imageDtos);
-            }
-        }
-
-        public static async Task CreateFabricaAsync(IGrabberFactory<ImageDto> factory, string theme = "Nature", int countImages = 5, string outputfile = "AllImages2.csv")
-        {
-            var pexelsgrabber =  factory.UsePexelsGrabber();
-            List<ImageDto> _listImageDtos = await pexelsgrabber.SearchPhotosAsync(theme,1,countImages);
-            ConvertToCSVAndSaveInFile(_listImageDtos, outputfile);
+            var pexelsgrabber =  factory.CreatePexelsGrabber();
+            await pexelsgrabber.SearchPhotosAsync(theme,1,countImages, outputfile);
         }
     }
 }
