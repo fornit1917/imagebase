@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20201204093640_FTSIntegration.cs" />
     <Compile Remove="Migrations\20201204093640_FTSIntegration.Designer.cs" />
+    <Compile Remove="Migrations\20201204105242_FTSIntegration.cs" />
+    <Compile Remove="Migrations\20201204105242_FTSIntegration.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -60,7 +60,7 @@ namespace ImageBase.WebApp.Repositories
             _context.ImageCatalogs.Remove(imageCatalog);
         }
 
-        public async Task<PaginationListDto <Image>> GetImagesByCatalogAsync(long id, int offset, int limit)
+        public async Task<PaginationListDto<Image>> GetImagesByCatalogAsync(long id, int offset, int limit)
         {
             IQueryable<Image> query = _context.ImageCatalogs.Where(ic => ic.CatalogId == id)
                 .Include(ic => ic.Image)

@@ -14,13 +14,5 @@ namespace ImageBase.WebApp.Data.Dtos
         public bool IncludeDescription { get; set; }
         public bool IncludeKeyWords { get; set; }
 
-        public string ConvertToPostgreFTSWeights()
-        {
-            string result="";
-            if (IncludeTitle) result += "A";
-            if (IncludeKeyWords) result += "B";
-            if (IncludeDescription) result += "C";
-            return result;
-        }
     }
 }

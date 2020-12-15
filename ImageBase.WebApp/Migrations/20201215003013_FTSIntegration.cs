@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
 
 namespace ImageBase.WebApp.Migrations
@@ -16,14 +15,12 @@ namespace ImageBase.WebApp.Migrations
                 name: "images_ft_search",
                 columns: table => new
                 {
-                    id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     image_id = table.Column<long>(nullable: false),
                     image_vector = table.Column<NpgsqlTsVector>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_images_ft_search", x => x.id);
+                    table.PrimaryKey("PK_images_ft_search", x => x.image_id);
                     table.ForeignKey(
                         name: "FK_images_ft_search_images_image_id",
                         column: x => x.image_id,
@@ -31,12 +28,6 @@ namespace ImageBase.WebApp.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_images_ft_search_image_id",
-                table: "images_ft_search",
-                column: "image_id",
-                unique: true);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_catalogs_catalogs_parent_catalog_id",
@@ -80,7 +71,7 @@ namespace ImageBase.WebApp.Migrations
                                                 'g'
                                             )::tsquery;
                                     $$ LANGUAGE SQL IMMUTABLE;");
-            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION images_fts(search_query text, weights text,query_limit int,query_offset int) RETURNS 
+            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION search_images_ft(search_query text, weights text,query_limit int,query_offset int) RETURNS 
                                     TABLE (""id"" bigint,title text,description text,key_words text) AS
                                     $$
 
@@ -118,6 +109,17 @@ namespace ImageBase.WebApp.Migrations
                                                     USING RUM (image_vector);
                                     END;
                                     $$ LANGUAGE plpgsql;");
+            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION get_search_images_ft_total(search_query text) RETURNS 
+                                     TABLE (""id"" bigint,title text,description text,key_words text) AS
+                                    $$
+                                    SELECT images.id,images.title,images.description,images.key_words from images,(
+                                    SELECT image_id, image_vector                                    
+                                    FROM images_ft_search                                   
+                                    WHERE image_vector  @@ plainto_tsquery(search_query)
+                                    ) AS ids
+                                    WHERE images.id = ids.image_id
+                                    $$ LANGUAGE SQL IMMUTABLE; ");
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -140,13 +142,14 @@ namespace ImageBase.WebApp.Migrations
             migrationBuilder.Sql(@"DROP INDEX image_vector_idx;");
             migrationBuilder.Sql(@"DROP EXTENSION rum;");
             migrationBuilder.Sql(@"DROP TRIGGER image_search_vector_update;");
-            migrationBuilder.Sql(@"DROP FUNCTION images_fts;");
+            migrationBuilder.Sql(@"DROP FUNCTION search_images_ft;");
             migrationBuilder.Sql(@"DROP FUNCTION setweight;");
             migrationBuilder.Sql(@"DROP FUNCTION image_tsvector_trigger;");
             migrationBuilder.Sql(@"DROP FUNCTION create_ft_index;");
             migrationBuilder.Sql(@"DROP FUNCTION remove_ft_index;");
             migrationBuilder.Sql(@"DROP FUNCTION disable_ft_trigger;");
             migrationBuilder.Sql(@"DROP FUNCTION enable_ft_trigger;");
+            migrationBuilder.Sql(@"DROP FUNCTION get_search_images_ft_total;");
         }
     }
 }

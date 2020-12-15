@@ -13,13 +13,10 @@ namespace ImageBase.WebApp.Data.ConfigurationDataBase.ConfigurationPostgreSQL
     {
         public ImageFtSearchConfiguration(EntityTypeBuilder<ImageFtSearch> entityBuilder)
         {
-            entityBuilder.HasKey(ifts => ifts.Id);
-            entityBuilder.Property(ifts => ifts.Id).HasColumnName("id");
             entityBuilder.HasOne(ifts => ifts.Image).WithOne(i => i.ImageFtSearch).HasForeignKey<ImageFtSearch>(ifts => ifts.ImageId).OnDelete(DeleteBehavior.Cascade);
-
+            entityBuilder.HasKey(ifts => ifts.ImageId);
             entityBuilder.Property(ifts => ifts.ImageId).HasColumnName("image_id").IsRequired();
             entityBuilder.Property(ifts => ifts.ImageVector).HasColumnName("image_vector").IsRequired();
-            entityBuilder.Property(ifts => ifts.Id).ValueGeneratedOnAdd();
 
             entityBuilder.ToTable("images_ft_search");
         }

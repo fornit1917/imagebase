@@ -1,7 +1,6 @@
 ﻿using ImageBase.WebApp.Data.Dtos;
 using ImageBase.WebApp.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,18 +63,25 @@ namespace ImageBase.WebApp.Repositories
             return await _context.Catalogs.Where(c => c.Id == id && c.UserId == userId).AnyAsync();
         }
 
-        public async Task<PaginationListDto<Image>> GetImagesBySearchQueryAsync(FullTextSeacrhDto query)
+        public async Task<IEnumerable<Image>> GetImagesBySearchQueryAsync(FullTextSeacrhDto query)
         {
-            var weights=query.ConvertToPostgreFTSWeights();
+            var weights=ConvertToPostgreFTSWeights(query);
             var images = await _context.Images
-                .FromSqlInterpolated($@"SELECT * FROM images_fts({query.SearchQuery},{weights},{query.Limit},{query.Offset});").ToListAsync();
-            return new PaginationListDto<Image>
-            {
-                Items = images,
-                TotalItemsCount = images.Count(),
-                Limit=query.Limit,
-                Offset=query.Offset              
-            };
+                .FromSqlInterpolated($@"SELECT * FROM search_images_ft({query.SearchQuery},{weights},{query.Limit},{query.Offset});").ToListAsync();
+            return images;
+        }
+        public async Task<int> GetImagesTotalCountBySearchQueryAsync(FullTextSeacrhDto query)
+        {
+            var result = await _context.Images.FromSqlInterpolated($@"SELECT * FROM get_search_images_ft_total({query.SearchQuery})").CountAsync();
+            return result;
+        }
+        public string ConvertToPostgreFTSWeights(FullTextSeacrhDto query)
+        {
+            string result = "";
+            if (query.IncludeTitle) result += "A";
+            if (query.IncludeKeyWords) result += "B";
+            if (query.IncludeDescription) result += "C";
+            return result;
         }
     }
 }

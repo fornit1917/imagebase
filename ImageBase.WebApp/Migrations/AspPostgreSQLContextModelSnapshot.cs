@@ -176,12 +176,6 @@ namespace ImageBase.WebApp.Migrations
 
             modelBuilder.Entity("ImageBase.WebApp.Data.Models.ImageFtSearch", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
                     b.Property<long>("ImageId")
                         .HasColumnName("image_id")
                         .HasColumnType("bigint");
@@ -191,10 +185,7 @@ namespace ImageBase.WebApp.Migrations
                         .HasColumnName("image_vector")
                         .HasColumnType("tsvector");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImageId")
-                        .IsUnique();
+                    b.HasKey("ImageId");
 
                     b.ToTable("images_ft_search");
                 });

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImageBase.WebApp.Data.Models
 {
-    public class ImageFtSearch:BaseEntity<long>
+    public class ImageFtSearch
     {
         public long ImageId { get; set; }
         public NpgsqlTsVector ImageVector { get; set; }

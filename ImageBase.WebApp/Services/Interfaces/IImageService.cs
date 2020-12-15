@@ -10,6 +10,6 @@ namespace ImageBase.WebApp.Services.Interfaces
     public interface IImageService
     {
         Task<ServiceResponse<ImageDto>> CreateImageAsync(AddImageDto addImageDto, string userId = null);
-        Task<ServiceResponse<PaginationListDto<Image>>> FullTextSearchByImagesAsync(FullTextSeacrhDto queryDto);
+        Task<ServiceResponse<PaginationListDto<ImageDto>>> FullTextSearchByImagesAsync(FullTextSeacrhDto queryDto);
     }
 }
