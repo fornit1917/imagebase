@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using ImageBase.WebApp.Data.Dtos;
 using ImageBase.WebApp.Data.Models;
-using ImageBase.WebApp.Repositories;
-using ImageBase.WebApp.Services.Interfaces;
-using Microsoft.Extensions.Logging;
-using ImageBase.WebApp.Data.Dtos;
-using Microsoft.AspNetCore.Authorization;
-using ImageBase.WebApp.Services;
-using Microsoft.AspNetCore.Identity;
 using ImageBase.WebApp.Data.Models.Authentication;
+using ImageBase.WebApp.Services;
+using ImageBase.WebApp.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ImageBase.WebApp.Controllers
 {
@@ -55,6 +49,16 @@ namespace ImageBase.WebApp.Controllers
             {
                 return null;
             }
+        }
+        [HttpGet("[action]")]
+        public async Task<ActionResult<PaginationListDto<ImageDto>>> Search(FullTextSeacrhDto fullTextSeacrhDto)
+        {
+            ServiceResponse<PaginationListDto<ImageDto>> serviceSearch = await _imagesService.FullTextSearchByImagesAsync(fullTextSeacrhDto);
+            if (serviceSearch.Success == false)
+            {
+                return StatusCode(500,serviceSearch.Message);
+            }
+            return Ok(serviceSearch);
         }
 
     }

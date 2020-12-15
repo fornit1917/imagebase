@@ -3,6 +3,7 @@ using System;
 using ImageBase.WebApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -10,9 +11,10 @@ using NpgsqlTypes;
 namespace ImageBase.WebApp.Migrations
 {
     [DbContext(typeof(AspPostgreSQLContext))]
-    partial class AspPostgreSQLContextModelSnapshot : ModelSnapshot
+    [Migration("20201215003013_FTSIntegration")]
+    partial class FTSIntegration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,38 +144,8 @@ namespace ImageBase.WebApp.Migrations
                         .HasColumnName("description")
                         .HasColumnType("text");
 
-                    b.Property<string>("ExternalId")
-                        .HasColumnName("external_id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("FileSize")
-                        .HasColumnName("file_size")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Height")
-                        .HasColumnName("height")
-                        .HasColumnType("integer");
-
                     b.Property<string>("KeyWords")
                         .HasColumnName("key_words")
-                        .HasColumnType("text");
-
-                    b.Property<string>("LargePreviewUrl")
-                        .IsRequired()
-                        .HasColumnName("large_preview_url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OriginalUrl")
-                        .IsRequired()
-                        .HasColumnName("original_url")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnName("service_id")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SmallPreviewUrl")
-                        .HasColumnName("small_preview_url")
                         .HasColumnType("text");
 
                     b.Property<string>("Title")
@@ -182,14 +154,7 @@ namespace ImageBase.WebApp.Migrations
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
-                    b.Property<int>("Width")
-                        .HasColumnName("width")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ServiceId", "ExternalId")
-                        .IsUnique();
 
                     b.ToTable("images");
                 });

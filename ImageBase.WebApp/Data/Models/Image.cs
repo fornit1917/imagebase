@@ -10,6 +10,7 @@ namespace ImageBase.WebApp.Data.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string KeyWords { get; set; }
+        public ImageFtSearch ImageFtSearch { get; set; }
         public int ServiceId { get; set; }
         public string ExternalId { get; set; }
         public string SmallPreviewUrl { get; set; }
@@ -18,7 +19,6 @@ namespace ImageBase.WebApp.Data.Models
         public int Width { get; set; }
         public int Height { get; set; }
         public int FileSize { get; set; }
-
         public List<ImageCatalog> ImageCatalogs { get; set; }
     }
 }

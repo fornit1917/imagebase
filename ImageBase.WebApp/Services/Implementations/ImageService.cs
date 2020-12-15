@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ImageBase.WebApp.Services.Implementations
 {
-    public class ImageService: IImageService
+    public class ImageService : IImageService
     {
         private readonly IImageRepository _repository;
         private readonly AspPostgreSQLContext _context;
@@ -41,6 +41,22 @@ namespace ImageBase.WebApp.Services.Implementations
             await _context.SaveChangesAsync();
             serviceResponse.Data = _mapper.Map<ImageDto>(image);
 
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<PaginationListDto<ImageDto>>> FullTextSearchByImagesAsync(FullTextSeacrhDto queryDto)
+        {
+            var serviceResponse = new ServiceResponse<PaginationListDto<ImageDto>>();
+
+            
+            var images= await _repository.GetImagesBySearchQueryAsync(queryDto);
+            var imagesDtos = new List<ImageDto>(images.Count());
+            foreach (Image img in images)
+            {
+                imagesDtos.Add(_mapper.Map<ImageDto>(img));
+            }
+            serviceResponse.Data = new PaginationListDto<ImageDto> { Items=imagesDtos,Limit=queryDto.Limit,Offset=queryDto.Offset,TotalItemsCount=await _repository.GetImagesTotalCountBySearchQueryAsync(queryDto)};
+            serviceResponse.Success = true;
             return serviceResponse;
         }
     }

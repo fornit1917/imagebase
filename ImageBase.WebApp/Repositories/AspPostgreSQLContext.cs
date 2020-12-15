@@ -16,6 +16,7 @@ namespace ImageBase.WebApp.Repositories
         public DbSet<Image> Images { get; set; }
         public DbSet<ImageCatalog> ImageCatalogs { get; set; }
         public DbSet<Catalog> Catalogs { get; set; }
+        public DbSet<ImageFtSearch> ImageFtSearches { get; set; }
         public AspPostgreSQLContext(DbContextOptions<AspPostgreSQLContext> options)
             : base(options)
         {
@@ -44,6 +45,7 @@ namespace ImageBase.WebApp.Repositories
             new ImageConfiguration(builder.Entity<Image>());
             new CatalogConfiguration(builder.Entity<Catalog>());
             new ImageCatalogConfiguration(builder.Entity<ImageCatalog>());
+            new ImageFtSearchConfiguration(builder.Entity<ImageFtSearch>());
 
         }
     }
