@@ -51,9 +51,9 @@ namespace ImageBase.WebApp.Controllers
         }
 
         [HttpGet("image/{id:int}")]
-        public async Task<ActionResult<IEnumerable<ImageDto>>> GetImagesByCatalog(int id, int offset = 0, int limit = 4)
+        public async Task<ActionResult<IEnumerable<ImagesListItemDto>>> GetImagesByCatalog(int id, int offset = 0, int limit = 4)
         {
-            ServiceResponse<PaginationListDto<ImageDto>> serviceGetImagesByCatalog = await _catalogService.GetImagesFromCatalogAsync(id, offset, limit);
+            ServiceResponse<PaginationListDto<ImagesListItemDto>> serviceGetImagesByCatalog = await _catalogService.GetImagesFromCatalogAsync(id, offset, limit);
             if (serviceGetImagesByCatalog.Success == false)
             {
                 return Forbid(serviceGetImagesByCatalog.Message);
