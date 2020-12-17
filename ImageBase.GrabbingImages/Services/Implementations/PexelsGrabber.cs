@@ -14,6 +14,7 @@ namespace ImageBase.GrabbingImages.Services.Implementations
     public class PexelsGrabber : IGrabber
     {
         public IConfiguration Configuration { get; }
+        private IConvertToSave Converter { get; set; }
         public PexelsGrabber(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -21,15 +22,13 @@ namespace ImageBase.GrabbingImages.Services.Implementations
         }
         private PexelsClient pexelsClient;
 
-        public async Task SearchPhotosAsync(string theme, int pagestart, int count,string outputfile)
+        public async Task SearchPhotosAsync(string theme, int pagestart, int count)
         {
             PhotoPage photoPage = await pexelsClient.SearchPhotosAsync(theme, "ru-RU", pagestart, count);
-            CreateListImages(photoPage, outputfile);
+            CreateListImages(photoPage);
         }
-        private void CreateListImages(PhotoPage photoPage,string outputfile)
+        private void CreateListImages(PhotoPage photoPage)
         {
-            CSVConverter csvConverter = new CSVConverter();
-            csvConverter.OutputFile = outputfile;
             for (int i = 0; i < photoPage.photos.Count; i++)
             {
                 ImageDto image = new ImageDto()
@@ -45,8 +44,18 @@ namespace ImageBase.GrabbingImages.Services.Implementations
                     small = photoPage.photos[i].source.small,
                     landscape = photoPage.photos[i].source.landscape
                 };
-                csvConverter.SaveToFile(image);
+                Converter.SaveToFile(image);
             }
+        }
+        public void InitializeConverterStream(IConvertToSave converter, string outputfile)
+        {
+            Converter = converter;
+            Converter.CreateStreamWriter(outputfile);
+        }
+        public void DisposeStream()
+        {
+            Converter?.Dispose();
+
         }
     }
 }

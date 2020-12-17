@@ -8,6 +8,7 @@ using System.IO;
 using ServiceStack.Text;
 using System;
 using ImageBase.GrabbingImages.Services.Interfaces;
+using ImageBase.GrabbingImages.Converters;
 
 namespace ImageBase.GrabbingImages
 {
@@ -53,10 +54,12 @@ namespace ImageBase.GrabbingImages
             }
         } 
        
-        public static async Task CreateFactoryAsync(IGrabberFactory factory, string theme = "Nature", int countImages = 5, string outputfile = "AllImages3.csv")
+        public static async Task CreateFactoryAsync(IGrabberFactory factory, string theme = "Nature", int countImages = 2, string outputfile = "AllImages.csv")
         {
             var pexelsgrabber =  factory.CreatePexelsGrabber();
-            await pexelsgrabber.SearchPhotosAsync(theme,1,countImages, outputfile);
+            pexelsgrabber.InitializeConverterStream(new CSVConverter(),outputfile);
+            await pexelsgrabber.SearchPhotosAsync(theme,1,countImages);
+            pexelsgrabber.DisposeStream();
         }
     }
 }
