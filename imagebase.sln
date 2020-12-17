@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBase.ImageHash.UnitTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBase.HashBase.UnitTests", "ImageBase.HashBase.UnitTests\ImageBase.HashBase.UnitTests.csproj", "{34EC7522-24B2-4206-B3C1-DA33B9485F2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageBase.GrabbingImages", "ImageBase.GrabbingImages\ImageBase.GrabbingImages.csproj", "{175BA793-13FE-4320-9A16-24FAC844C771}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{34EC7522-24B2-4206-B3C1-DA33B9485F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34EC7522-24B2-4206-B3C1-DA33B9485F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34EC7522-24B2-4206-B3C1-DA33B9485F2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{175BA793-13FE-4320-9A16-24FAC844C771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{175BA793-13FE-4320-9A16-24FAC844C771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{175BA793-13FE-4320-9A16-24FAC844C771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{175BA793-13FE-4320-9A16-24FAC844C771}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
